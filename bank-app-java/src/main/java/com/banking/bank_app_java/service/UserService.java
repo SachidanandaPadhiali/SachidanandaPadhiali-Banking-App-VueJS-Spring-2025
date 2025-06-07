@@ -13,5 +13,5 @@ public interface UserService {
 	BankResponse creditAccount(CreditDebitRequest creditDebitRequest);
 	BankResponse debitAccount(CreditDebitRequest creditDebitRequest);
 	BankResponse transfer(Transfer transferRequest);
-
+	BankResponse checkUserDuplicate(UserRequests userRequests);
 }

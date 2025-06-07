@@ -8,9 +8,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(
+        origins = "http://192.168.1.4.nip.io:8080",
+        allowedHeaders = "*",
+        allowCredentials = "true"
+)
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:8088")
 public class UserController {
 
     @Autowired
@@ -18,17 +22,31 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserRequests userRequests) {
-        User user = userService.validateUser(userRequests.getEmail(), userRequests.getPassword());
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        try {
+            User user = userService.validateUser(userRequests.getEmail(), userRequests.getPassword());
+            if (user != null) {
+                return ResponseEntity.ok(user);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            }
+        }catch (Exception ex) {
+            // Log the full stack trace to console/logs:
+            ex.printStackTrace();
+            // Return a 500 with the exception message (for debugging only):
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Login failed: " + ex.getMessage());
         }
     }
 
     @PostMapping("/user")
     public BankResponse createAccount(@RequestBody UserRequests userRequests) {
         return userService.createAccount(userRequests);
+    }
+
+    @GetMapping("/checkuser")
+    public BankResponse checkUserDuplicate(@RequestBody UserRequests userRequests) {
+        return userService.checkUserDuplicate(userRequests);
     }
 
     @GetMapping("/user/BalanceEnquiry")

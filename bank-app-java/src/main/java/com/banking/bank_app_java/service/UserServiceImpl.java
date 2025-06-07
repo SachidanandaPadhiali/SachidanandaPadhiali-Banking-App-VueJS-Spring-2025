@@ -45,6 +45,7 @@ public class UserServiceImpl implements UserService{
 				.pin(userRequests.getPin())
 				.email(userRequests.getEmail())
 				.phoneNumber(String.valueOf(userRequests.getPhoneNumber()))
+				.password(userRequests.getPassword())
 				.accNo(AccountUtils.generateAccountNumber())
 				.accBalance(BigDecimal.ZERO)
 				.accStatus("ACTIVE")
@@ -82,6 +83,18 @@ public class UserServiceImpl implements UserService{
 						.build())
 				.build();
     }
+
+	@Override
+	public BankResponse checkUserDuplicate(UserRequests userRequests) {
+		if(userRepo.existsByEmail(userRequests.getEmail())) {
+			return BankResponse.builder()
+					.responseCode(AccountUtils.ACCOUNT_EXISTS_CODE)
+					.responseMessage(AccountUtils.ACCOUNT_EXISTS_MESSAGE)
+					.accountInfo(null) //the user who wanted to create account does not have any account information
+					.build();
+		}
+		return null;
+	}
 
 	public User validateUser(String username, String password) {
 		User user = userRepo.findByEmail(username);
@@ -265,6 +278,5 @@ public class UserServiceImpl implements UserService{
 						.build())
 				.build();
 	}
-
 
 }
