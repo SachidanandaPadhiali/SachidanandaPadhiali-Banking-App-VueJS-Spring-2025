@@ -1,5 +1,6 @@
 package com.banking.bank_app_java.dto;
 
+import com.banking.bank_app_java.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,4 +15,5 @@ public class EmailDetails {
     private String subject;
     private String msgBody;
     private String attachment;
+    private User savedUser;
 }

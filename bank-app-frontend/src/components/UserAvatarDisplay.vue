@@ -1,6 +1,7 @@
 <template>
     <div class="avatar-container">
-        <img v-if="avatarUrl" :src="avatarUrl" alt="Profile Avatar" class="avatar-image" @error="onImageError" width="100" />
+        <img v-if="avatarUrl" :src="avatarUrl" alt="Profile Avatar" class="avatar-image" @error="onImageError"
+            width="100" />
         <div v-else>
             <img src="../assets/img/avatar-default.svg" alt="" width="100">
         </div>
@@ -11,7 +12,11 @@
 export default {
     name: "UserAvatarDisplay",
     props: {
-        userId: { type: Number, required: true }
+        accountNum: {
+            type: String,
+            required: true,
+            default: 'Unknown'
+        }
     },
     data() {
         return {
@@ -23,7 +28,7 @@ export default {
             try {
                 // This endpoint returns image bytes, so set responseType to 'blob'
                 const response = await this.$axios.get(
-                    `http://192.168.1.4.nip.io:8088/api/users/${this.userId}/avatar`,
+                    `http://192.168.1.4.nip.io:8088/api/users/${this.accountNum}/avatar`,
                     { responseType: "blob" }
                 );
                 // Create a local object URL for the blob

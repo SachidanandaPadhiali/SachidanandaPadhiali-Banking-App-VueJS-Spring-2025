@@ -6,6 +6,7 @@ import SignUp from "./components/SignUp.vue";
 import SignIn from "./components/SignIn.vue";
 import CreateAccount from './components/CreateAccount.vue';
 import {createRouter, createWebHistory} from "vue-router";
+import SavingsAcc from "./components/SavingsAcc.vue";
 
 const routes = [
     {
@@ -43,6 +44,12 @@ const routes = [
         name: "UserProfile",
         component: Profile,
         path:"/User/Profile",
+        meta: { requiresAuth: true }
+    },
+    {
+        name: "SavingsAcc",
+        component: SavingsAcc,
+        path:"/User/savings",
         meta: { requiresAuth: true }
     }
 ];

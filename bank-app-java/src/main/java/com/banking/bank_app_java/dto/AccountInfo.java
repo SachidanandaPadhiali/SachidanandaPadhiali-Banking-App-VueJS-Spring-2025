@@ -1,5 +1,7 @@
 package com.banking.bank_app_java.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +16,7 @@ import java.math.BigDecimal;
 public class AccountInfo {
 
 	private String accName;
+	@JsonSerialize(using = ToStringSerializer.class)
 	private BigDecimal accBalance;
 	private String accNo;
 }

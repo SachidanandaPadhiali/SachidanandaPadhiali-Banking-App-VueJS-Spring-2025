@@ -59,19 +59,10 @@ public class UserServiceImpl implements UserService{
 		 */
 		EmailDetails emailDetails = EmailDetails.builder()
 				.recipient(userRequests.getEmail())
-				.subject("ACCOUNT CREATED.. "+userRequests.getFirstName() + " " + userRequests.getLastName())
-				.msgBody("Congratulations!! Your account has been created!\n" +
-						"Your account details\n" +
-						"---------------------\n" +
-						"First Name:" + userRequests.getFirstName() +
-						"Last Name: " + userRequests.getLastName() +
-						"Account Number: " + savedUser.getAccNo() +
-						"Address: " + userRequests.getAddressLine1() + ", " + userRequests.getAddressLine2()
-						+ ", " + userRequests.getCity() + ", " + userRequests.getState() + ", " + userRequests.getPin()	+
-						"Linked PhoneNum: " + userRequests.getPhoneNumber()
-				)
+				.subject("🎉 ACCOUNT CREATED.. "+userRequests.getFirstName() + " " + userRequests.getLastName())
+				.savedUser(savedUser)
 				.build();
-		emailService.sendEmail(emailDetails);
+		emailService.sendSignUpEmail(emailDetails);
 
 		return BankResponse.builder()
 				.responseCode(AccountUtils.ACCOUNT_CREATED_CODE)

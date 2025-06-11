@@ -16,7 +16,7 @@
                                     <div v-if="previewUrl" class="image-preview">
                                         <img :src="previewUrl" alt="Preview" />
                                     </div>
-                                    
+
                                     <button class="success-btn" :disabled="!selectedFile"
                                         :class="{ 'disabled-btn': !selectedFile }" @click="uploadAvatar">
                                         Upload
@@ -26,9 +26,9 @@
                             </div>
 
                             <div class="mt-3">
-                                <h4>{{ username }}</h4>
-                                <p class="text-secondary mb-1">{{ email }}</p>
-                                <p class="text-muted font-size-sm">{{ phno }}</p>
+                                <h4>{{ user.firstName }}</h4>
+                                <p class="text-secondary mb-1">{{ user.email }}</p>
+                                <p class="text-muted font-size-sm">{{ user.phoneNumber }}</p>
                             </div>
                         </div>
                         <div class="list-group list-group-flush text-center mt-4">
@@ -39,12 +39,17 @@
                             <a href="#" class="btn mybtn" :class="{ active: activeIndex === 0 }"
                                 @click.prevent="showProfileDetails">
                                 <svg-icon type="mdi" :path="acc" />
-                                Profile Information
+                                Personal Information
                             </a>
                             <a href="#" class="btn mybtn" :class="{ active: activeIndex === 1 }"
                                 @click.prevent="showAddressBook">
                                 <svg-icon type="mdi" :path="add" />
                                 Address
+                            </a>
+                            <a href="#" class="btn mybtn" :class="{ active: activeIndex === 2 }"
+                                @click.prevent="showAcc">
+                                <svg-icon type="mdi" :path="passbook" />
+                                Account Information
                             </a>
                             <a href="#" @click="logout" class="btn mybtn">
                                 <svg-icon type="mdi" :path="logouticon" />
@@ -60,38 +65,65 @@
                         <div class="mycard-body">
                             <h5>Profile Information</h5>
                             <hr>
-                            <p><strong>Name:</strong> {{ fullname }}</p>
-                            <p><strong>Email:</strong> {{ email }}</p>
-                            <p><strong>Phone No.:</strong> {{ phno }}</p>
+                            <p><strong>Name:</strong> {{ user.fullname }}</p>
+                            <p><strong>Email:</strong> {{ user.email }}</p>
+                            <p><strong>Phone No.:</strong> {{ user.phoneNumber }}</p>
                         </div>
                     </div>
 
-                    <div v-show="activeIndex === 1" id="addressBook" class="card">
-                        <div class="card-body">
+                    <div v-show="activeIndex === 1" id="addressBook" class="detailscard">
+                        <div class="mycard-body">
                             <h5>Address Book</h5>
-                            <div id="addressList" class="address-list-container">
-                                <h2>Your Saved Addresses</h2>
-
-                                <div v-if="addresses.length === 0" class="no-address">
-                                    No addresses saved yet.
-                                </div>
-
-                                <div v-else class="address-cards">
-                                    <div v-for="(address, index) in addresses" :key="index" class="address-card">
-                                        <h3>{{ address.name }}</h3>
-                                        <p>{{ address.addressLine1 }}, {{ address.city }}</p>
-                                        <p>{{ address.state }}, {{ address.country }} - {{ address.pin }}</p>
-                                        <p>Mobile: {{ address.mobile }}</p>
-
-                                        <div class="action-buttons">
-                                            <button @click="editAddress(index)">Edit</button>
-                                            <button @click="confirmAndDeleteAddress(address.addId)">Delete</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <hr>
+                            <h3>{{ user.fullname }}</h3>
+                            <p>{{ user.addressLine1 }}, {{ user.addressLine2 }}, {{ user.city }}</p>
+                            <p>{{ user.state }} - {{ user.pin }}</p>
+                            <p>Mobile: {{ user.phoneNumber }}</p>
                         </div>
                     </div>
+                    <div v-show="activeIndex === 2" id="accounts" class="detailscard">
+                        <div class="mycard-body">
+                            <h5>Account Information</h5>
+                            <hr>
+                            <h3>{{ user.fullname }}</h3>
+                            <router-link to="/User/savings" class="savingsnav">
+                                <p>
+                                    {{ 'Savings Account' }} <br>
+                                    {{ 'Account Balance: ₹ ' + user.bal }}
+                                </p>
+                                <svg-icon class="myicons" type="mdi" :path="gotosavings" />
+                            </router-link>
+                            <CollapsDetails :title="'Savings Account\nAccount Balance: ₹' + user.bal"
+                                v-show="activeIndex === 2" id="accounts">
+                                <hr>
+                                <p><strong>Account Number:</strong> {{ user.accountNum }}</p>
+                                <p><strong>Balance:</strong> ₹ {{ user.bal }}</p>
+                                <p><strong>Status:</strong> Active</p>
+                                <CollapsDetails title="Show recent Transactions" v-show="activeIndex === 2"
+                                    id="accounts">
+                                    <hr>
+                                    <ul style="list-style: none; left:0;">
+                                        <li>🟢 Credited ₹5000 on 01-Jun</li>
+                                        <li>🔴 Debited ₹1200 on 03-Jun</li>
+                                    </ul>
+                                </CollapsDetails>
+
+                            </CollapsDetails>
+                        </div>
+                    </div>
+                    <CollapsDetails title="Fixed Deposits" class="accdetails" v-show="activeIndex === 2" id="accounts">
+                        <p><strong>Account Number:</strong> 1234567890</p>
+                        <p><strong>Balance:</strong> ₹0.00</p>
+                        <p><strong>Status:</strong> Active</p>
+                    </CollapsDetails>
+                    <CollapsDetails title="Recurring Deposits" class="accdetails" v-show="activeIndex === 2"
+                        id="accounts">
+                        <ul>
+                            <li>🟢 Credited ₹5000 on 01-Jun</li>
+                            <li>🔴 Debited ₹1200 on 03-Jun</li>
+                        </ul>
+                    </CollapsDetails>
+
                 </div>
             </div>
         </div>
@@ -100,30 +132,44 @@
 
 <script>
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiAccount, mdiArrowDownDropCircle, mdiBook, mdiLogout, mdiHome } from '@mdi/js';
+import { mdiArrowRightDropCircle, mdiAccount, mdiArrowDownDropCircle, mdiBook, mdiLogout, mdiHome, mdiWallet } from '@mdi/js';
 import axios from 'axios';
 import UserAvatarDisplay from './UserAvatarDisplay.vue';
+import CollapsDetails from './Collaps.vue';
 
 export default {
     name: 'UserProfile',
-    components: { SvgIcon, UserAvatarDisplay },
+    components: { SvgIcon, UserAvatarDisplay, CollapsDetails },
     data() {
         return {
+            gotosavings: mdiArrowRightDropCircle,
             cir: mdiArrowDownDropCircle,
             acc: mdiAccount,
             add: mdiBook,
             logouticon: mdiLogout,
             home: mdiHome,
-            userId: '',
-            fullname: "",
-            username: "",
-            email: "",
+            passbook: mdiWallet,
             activeIndex: 0,
             addresses: [],
             showPopup: false,
             previewUrl: null,
             selectedFile: null,
-            uploadMessage: ""
+            uploadMessage: "",
+            user: {
+                accountNum: '',
+                bal: '',
+                firstName: '',
+                lastName: '',
+                email: '',
+                phoneNumber: '',
+                addressLine1: '',
+                addressLine2: '',
+                city: '',
+                state: '',
+                country: '',
+                pin: '',
+                gender: ''
+            }
         }
     },
     mounted() {
@@ -136,12 +182,12 @@ export default {
             try {
                 const userData = JSON.parse(storedData);
                 console.log(`user : `, userData.id);
-                this.userId = userData.id;
-                this.username = userData.username.split(" ")[0];
-                this.fullname = userData.username;
-                this.email = userData.email;
-                this.phno = userData.phno;
-                console.log("Welcome, " + userData.username);
+                this.user.firstName = userData.firstName;
+                this.user.fullname = userData.firstName + " " + userData.lastName;
+                this.user.email = userData.email;
+                this.user.phoneNumber = userData.phoneNumber;
+                this.user.accountNum = userData.accNo;
+                console.log("Welcome, " + this.user);
             } catch (error) {
                 console.error("Error!! parsing user data:", error);
             }
@@ -149,10 +195,7 @@ export default {
             console.log("No user data found.");
         }
         this.fetchAddresses();
-    },
-    beforeUnmount() {
-        window.removeEventListener("resize", this.checkMobile);
-        document.removeEventListener("click", this.handleClickOutside);
+        this.fetchAccInfo();
     },
     methods: {
         onImageSelected(event) {
@@ -172,7 +215,7 @@ export default {
 
             try {
                 await axios.post(
-                    `http://192.168.1.4.nip.io:8088/api/users/${this.userId}/avatar`,
+                    `http://192.168.1.4.nip.io:8088/api/users/${this.user.accountNum}/avatar`,
                     formData,
                     {
                         headers: {
@@ -193,24 +236,41 @@ export default {
         showAddressBook() {
             this.activeIndex = 1;
         },
-        async fetchAddresses() {
+        showAcc() {
+            this.activeIndex = 2;
+        },
+        fetchAddresses() {
             try {
-                const response = await axios.get(`http://192.168.1.4.nip.io:8088/api/address/user/${this.userId}`);
-                this.addresses = response.data || [];
-                console.log(response.data);
+                const storedData = localStorage.getItem("user-login-info");
+                const userData = JSON.parse(storedData);
+
+                this.user.addressLine1 = userData.addressLine1;
+                this.user.addressLine2 = userData.addressLine2;
+                this.user.city = userData.city;
+                this.user.state = userData.state;
+                this.user.country = userData.country;
+                this.user.pin = userData.pin;
+
             } catch (error) {
                 console.error('Error fetching addresses:', error);
             }
         },
-        async editAddress(addressIndex) {
+        async fetchAccInfo() {
             try {
-                const editThisAddress = this.addresses[addressIndex];
-                this.$refs.popupRef.showFilledPopup(editThisAddress);
-                //await axios.post(`http://192.168.1.4.nip.io:8088/api/address/update/${addressId}`);
-                // Remove from local list
+                // Fetch user data from backend
+                console.log(this.user.accountNum);
+                const loginresponse = await axios.get("http://192.168.1.4.nip.io:8088/api/user/BalanceEnquiry", {
+                    params: { accountNumber: this.user.accountNum }
+                });
+                console.log(loginresponse.data.accountInfo.accBalance);
+                this.user.bal = loginresponse.data.accountInfo.accBalance;
             } catch (error) {
-                console.error("Error deleting address:", error);
-                alert("Failed to delete address.");
+                if (error.response && error.response.status === 401) {
+                    // invalid credentials
+                    console.warn("Invalid credentials");
+                } else {
+                    console.error("Error fetching account details:", error);
+                }
             }
         },
         refreshAvatar() {
@@ -237,6 +297,10 @@ export default {
 
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css");
 
+#accounts {
+    white-space: pre-line;
+}
+
 /* ............/navbar/............ */
 .navprofile {
     display: flex;
@@ -255,88 +319,23 @@ export default {
     z-index: 999;
 }
 
-/*Logo*/
-.logo {
-    width: 20%;
+.savingsnav {
     display: flex;
-    align-items: center;
-    height: 100%;
+    justify-content: space-between;
+    cursor: pointer;
+    font-weight: var(--font-semi-bold);
+    font-size: var(--normal-font-size);
+    color: var(--dark-text);
 }
 
-.logo a {
-    display: flex;
-    align-items: center;
+.savingsnav:hover {
     text-decoration: none;
-    height: 100%;
-    gap: 8px;
-    /* Adds space between image and text */
 }
 
-.logo img {
-    max-height: 200%;
-}
-
-@media (max-width: 600px) {
-    .logo {
-        width: 50%;
-    }
-
-    .logo img {
-        max-height: 40px;
-    }
-
-    .detailscard {
-        margin-top: 10px;
-    }
-
-}
-
-@media (max-width: 500px) {
-    .logo {
-        width: 50%;
-    }
-
-    .logo img {
-        max-height: 40px;
-    }
-
-    .detailscard {
-        margin-top: 10px;
-    }
-
-
-}
-.file-upload-wrapper {
-  display: inline-block;
-  position: relative;
-}
-
-.hidden-file-input {
-  display: none;
-}
-
-.custom-file-label {
-  background-color: var(--primary, #007bff);
-  color: #fff;
-  padding: 10px 30px;
-  border-radius: 5px;
-  font-weight: 500;
-  font-family: "Open Sans", sans-serif;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  display: inline-block;
-  text-align: center;
-}
-
-.custom-file-label:hover {
-  background-color: var(--primary-dark, #0056b3);
-}
-
-/* FLEX for list group */
+/*====== FLEX for list group ======*/
 .container {
     max-width: 1200px;
-    width: 90%;
+    width: 100%;
     margin: 10px auto;
 }
 
@@ -351,6 +350,29 @@ export default {
     border: 2px solid var(--primary);
     border-radius: 20px;
     padding: 2em;
+}
+
+@media (max-width: 768px) {
+    .mycard {
+        margin-bottom: var(--mb-2);
+    }
+
+}
+
+@media (max-width: 500px) {
+    .mycard {
+        margin-bottom: var(--mb-2);
+    }
+
+    .detailscard {
+        padding: 0.2em;
+    }
+}
+
+.accdetails {
+    border: 2px solid var(--primary);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
 }
 
 /*======= LEFT SECTION BUTTONS =======*/
@@ -397,42 +419,6 @@ export default {
 .list-group-item.active {
     background: var(--accent);
     font-weight: bold;
-}
-
-
-/*======= Addresses =======*/
-.address-list-container {
-    padding: 20px;
-}
-
-.address-cards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.address-card {
-    background: var(--card-bg);
-    padding: 16px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    width: 100%;
-    max-width: 300px;
-}
-
-.action-buttons {
-    margin-top: 12px;
-}
-
-.action-buttons button {
-    margin-right: 8px;
-    padding: 6px 12px;
-    border: none;
-    background-color: var(--bg-btn);
-    color: var(--white-text);
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
 }
 
 /*======= CHANGE PROFILE IMAGE ======== */

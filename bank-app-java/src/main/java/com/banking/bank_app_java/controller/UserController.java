@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @CrossOrigin(
         origins = "http://192.168.1.4.nip.io:8080",
         allowedHeaders = "*",
@@ -50,7 +52,9 @@ public class UserController {
     }
 
     @GetMapping("/user/BalanceEnquiry")
-    public BankResponse accountBalanceEnquiry(@RequestBody EnquiryRequest enquiryRequest) {
+    public BankResponse accountBalanceEnquiry(@RequestParam String accountNumber) {
+        EnquiryRequest enquiryRequest = new EnquiryRequest();
+        enquiryRequest.setAccountNumber(accountNumber);
         return userService.balanceEnquiry(enquiryRequest);
     }
 
