@@ -2,12 +2,14 @@ package com.banking.bank_app_java.service;
 
 import com.banking.bank_app_java.dto.*;
 import com.banking.bank_app_java.entity.User;
+import com.banking.bank_app_java.entity.UserBank;
 
 public interface UserService {
 
 	
 	BankResponse createAccount(UserRequests userRequest);
-	public User validateUser(String username, String password);
+	User validateUser(String username, String password);
+	UserBank getAccDetails(Long id);
 	BankResponse balanceEnquiry(EnquiryRequest enquiryRequest);
 	String nameEnquiry(EnquiryRequest enquiryRequest);
 	BankResponse creditAccount(CreditDebitRequest creditDebitRequest);

@@ -1,6 +1,17 @@
 <template>
     <form id="registerFormElement" @submit.prevent="submitForm">
         <div class="input-group">
+            <select v-model="localForm.bankAddress" required>
+                <option disabled value="">Choose your Bank Branch</option>
+                <option v-for="(bankaddress, index) in bankAddresses" :key="index" :value="bankaddress"
+                    :title="bankaddress" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                    {{ bankaddress }}
+                </option>
+            </select>
+            <span class="custom-arrow"></span>
+        </div>
+
+        <div class="input-group">
             <svg-icon class="input-icon" type="mdi" :path="pass" />
             <input type="password" v-model="localForm.password" id="registerPassword" placeholder="Create Password">
         </div>
@@ -28,6 +39,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import SvgIcon from '@jamescoyle/vue-icon'
 import { mdiLockOutline, mdiLockCheckOutline } from '@mdi/js'
 
@@ -35,7 +47,11 @@ export default {
     name: "SignupStep2",
     components: { SvgIcon },
     data() {
-        return { pass: mdiLockOutline, checkpass: mdiLockCheckOutline, errorMessage: '',duplicateUser: '' }
+        return {
+            pass: mdiLockOutline, checkpass: mdiLockCheckOutline,
+            errorMessage: '', duplicateUser: '',
+            bankAddresses: []
+        }
     },
     props: {
         modelValue: {
@@ -47,7 +63,7 @@ export default {
         localForm: {
             get() {
                 // Safely return a default object to avoid undefined error
-                return this.modelValue || { password: '', confirmPassword: '' };
+                return this.modelValue || { bankaddress: '', password: '', confirmPassword: '' };
             },
             set(newValue) {
                 this.$emit('update:modelValue', newValue);
@@ -56,6 +72,9 @@ export default {
         passwordMismatch() {
             return this.localForm.password && this.localForm.confirmPassword && this.localForm.password !== this.localForm.confirmPassword;
         }
+    },
+    mounted() {
+        this.fetchBankAddresses();
     },
     methods: {
         isPasswordValid(password) {
@@ -70,6 +89,14 @@ export default {
             const hasMinLength = password.length >= 8;
 
             return hasMinLength;
+        },
+        async fetchBankAddresses() {
+            try {
+                const response = await axios.get('http://192.168.1.4.nip.io:8088/api/bank/addresses');
+                this.bankAddresses = response.data;
+            } catch (error) {
+                console.error('Error fetching addresses:', error);
+            }
         },
         validateStep() {
             const requiredFields = ['password', 'confirmPassword'];

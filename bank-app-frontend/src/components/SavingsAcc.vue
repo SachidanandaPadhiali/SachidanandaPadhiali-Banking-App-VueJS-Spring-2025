@@ -1,8 +1,8 @@
 <template>
     <header class="savingsheader">
         <router-link to="/User/Profile" class="header-content">
-            <svg-icon style="color:white; height: 50px; width:50px;" type="mdi" :path="gotoprofile" />
-            <p class="savingstext">Savings Account</p>
+            <svg-icon style="color:white; height: 30px; width:30px;" type="mdi" :path="gotoprofile" />
+            <h2 class="savingstext">Savings Account</h2>
         </router-link>
     </header>
     <div id="SavingsAccount" class="container">
@@ -11,18 +11,42 @@
                 <div id="profileDetails" class="savnavdetails">
                     <p>Savings Account</p>
                     <p>{{ user.accountNum }}</p>
+                    <p>Available Balance: {{ user.bal }}</p>
                 </div>
             </div>
             <hr>
 
-            <CollapsDetails title="Show Account Details" class="savaccdetails" id="accounts">
+            <CollapsDetails title="Show Account Details" id="accounts">
                 <hr>
-                <p><strong>Account Number:</strong> 1234567890</p>
-                <p><strong>Balance:</strong> ₹0.00</p>
-                <p><strong>Status:</strong> Active</p>
-            </CollapsDetails>
+                <div class="feature-comparison">
+                    <div class="comparison-table">
+                        <table class="table table-hover mb-0">
+                            <tbody>
+                                <tr>
+                                    <td><strong>Account Holder</strong></td>
+                                    <td>{{ user.fullname }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Branch IFSC</strong></td>
+                                    <td>{{ user.ifsc }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Branch</strong></td>
+                                    <td>{{ user.branch }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Status</strong></td>
+                                    <td>{{ user.accStatus }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-            <CollapsDetails title="Statement" class="savaccdetails" id="accounts">
+            </CollapsDetails>
+            <hr>
+
+            <CollapsDetails title="Statement" id="accounts">
                 <hr>
                 <ul>
                     <li v-for="(transaction, index) in displayedTransactions" :key="index">
@@ -30,10 +54,13 @@
                     </li>
                 </ul>
                 <hr>
-                <a class="moreless" v-if="showMoreEnabled" @click="showMore">Show More Transactions<svg-icon
-                        style="color:var(--dark-text); height: 20px; width:20px;" type="mdi" :path="more" /></a>
-                <a class="moreless" v-if="showLessEnabled" @click="showLess">Show Less Transactions<svg-icon
-                        style="color:var(--dark-text); height: 20px; width:20px;" type="mdi" :path="less" /></a>
+                <div class="statement">
+                    <a class="moreless" v-if="showMoreEnabled" @click="showMore">Show More Transactions<svg-icon
+                            style="color:var(--dark-text); height: 20px; width:20px;" type="mdi" :path="more" /></a>
+                    <a class="moreless" v-if="showLessEnabled" @click="showLess">Show Less Transactions<svg-icon
+                            style="color:var(--dark-text); height: 20px; width:20px;" type="mdi" :path="less" /></a>
+                    <button class='rsbtn'>Request Statement</button>
+                </div>
             </CollapsDetails>
 
         </div>
@@ -56,25 +83,23 @@ export default {
             less: mdiArrowUpDropCircleOutline,
             more: mdiArrowDownDropCircleOutline,
             activeIndex: 0,
-            addresses: [],
             showPopup: false,
             previewUrl: null,
             selectedFile: null,
             uploadMessage: "",
             user: {
+                id: '',
                 accountNum: '',
+                fullname: '',
+                accStatus: 'ACTIVE',
                 bal: '',
                 firstName: '',
                 lastName: '',
                 email: '',
                 phoneNumber: '',
-                addressLine1: '',
-                addressLine2: '',
-                city: '',
-                state: '',
-                country: '',
-                pin: '',
-                gender: ''
+                nominee: '',
+                ifsc:'',
+                branch:''
             },
             allTransactions: [
                 "Transaction 1", "Transaction 2", "Transaction 3", "Transaction 4", "Transaction 5",
@@ -90,7 +115,7 @@ export default {
             ],
             displayedTransactions: [],
             recordsToShow: 10,
-            recordsCount: 10,
+            recordsToDedut: 20,
             maxRecordsToShow: 30
         }
     },
@@ -101,11 +126,14 @@ export default {
             try {
                 const userData = JSON.parse(storedData);
                 console.log(`user : `, userData.id);
+                this.user.id = userData.id;
                 this.user.firstName = userData.firstName;
                 this.user.fullname = userData.firstName + " " + userData.lastName;
                 this.user.email = userData.email;
                 this.user.phoneNumber = userData.phoneNumber;
                 this.user.accountNum = userData.accNo;
+                this.user.ifsc = userData.ifsc,
+                this.user.branch = userData.bankAddress
                 console.log("Welcome, " + this.user);
             } catch (error) {
                 console.error("Error!! parsing user data:", error);
@@ -114,7 +142,7 @@ export default {
             console.log("No user data found.");
         }
         this.showMore();
-        this.fetchAddresses();
+        this.fetchBank();
         this.fetchAccInfo();
     },
     computed: {
@@ -135,21 +163,16 @@ export default {
         },
         showLess() {
             if (this.displayedTransactions.length >= this.maxRecordsToShow) {
-                this.displayedTransactions.splice(-this.recordsToShow, this.recordsToShow);
+                this.displayedTransactions.splice(this.recordsToShow, this.recordsToDedut);
             }
         },
-        fetchAddresses() {
+        async fetchBank() {
+            console.log('User ID ::: ',this.user);
             try {
-                const storedData = localStorage.getItem("user-login-info");
-                const userData = JSON.parse(storedData);
-
-                this.user.addressLine1 = userData.addressLine1;
-                this.user.addressLine2 = userData.addressLine2;
-                this.user.city = userData.city;
-                this.user.state = userData.state;
-                this.user.country = userData.country;
-                this.user.pin = userData.pin;
-
+                const bankDetails = await axios.get("http://192.168.1.4.nip.io:8088/api/user/getIFSC", {
+                    params: { accountNumber: this.user.id }
+                });
+                console.log('Bank Details ::: ',bankDetails.data);
             } catch (error) {
                 console.error('Error fetching addresses:', error);
             }
@@ -157,7 +180,6 @@ export default {
         async fetchAccInfo() {
             try {
                 // Fetch user data from backend
-                console.log(this.user.accountNum);
                 const loginresponse = await axios.get("http://192.168.1.4.nip.io:8088/api/user/BalanceEnquiry", {
                     params: { accountNumber: this.user.accountNum }
                 });
@@ -208,6 +230,7 @@ export default {
 }
 
 .savingstext {
+    margin: 5px 0;
     justify-content: center;
     font-size: var(--normal-font-size);
     color: var(--white-text);
@@ -217,7 +240,8 @@ export default {
     padding-left: 5%;
 }
 
-.savnavdetails p {
+.savnavdetails p,
+.savnavdetails h3 {
     padding: 0;
     margin: 0;
     text-align: left;
@@ -227,23 +251,44 @@ export default {
     margin-top: 2%;
 }
 
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.table td {
+    padding: 0.5rem 0.5rem;
+    border: none;
+}
+
+.table tr {
+    transition: all .3s ease;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.statement {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .moreless {
-    width: 110px;
-    margin-top: 1rem;
-    font-family: inherit;
-    font-size: 1rem;
-    text-align: left;
-    padding: 0;
-    text-transform: capitalize;
+    margin: 1rem 0;
+    font-size: var(--normal-font-size);
     border: none;
     color: var(--brown);
     background: transparent;
     font-weight: bold;
     cursor: pointer;
     border-bottom: 2px solid transparent;
-    position: relative;
-    padding-right: 1.5rem;
     text-decoration: none;
+    display: block;
 }
 
 .moreless::before {
@@ -258,9 +303,29 @@ export default {
     clip-path: polygon(0 0, 50% 100%, 100% 0);
 }
 
-
 .moreless:hover {
     text-decoration: none;
+}
+
+.rsbtn {
+    position: relative;
+    z-index: 0;
+    overflow: hidden;
+    width: fit-content;
+    padding: 5px;
+    color: var(--dark-text);
+    text-decoration: none;
+    font-weight: var(--font-normal);
+    font-size: var(--normal-font-size);
+    cursor: pointer;
+    border-radius: 50px;
+    transition: all 0.4s ease;
+}
+
+.rsbtn:hover {
+    background-color: var(--primary);
+    letter-spacing: 2px;
+    color: var(--white-text);
 }
 
 
@@ -269,9 +334,5 @@ export default {
     max-width: 1200px;
     width: 100%;
     margin: 70px auto;
-}
-
-.savaccdetails {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 </style>

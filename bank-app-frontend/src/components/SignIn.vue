@@ -88,10 +88,11 @@ export default {
                     email: this.user.email,
                     password: this.user.password
                 });
+                console.log(loginresponse);
                 const user = loginresponse.data;
                 console.log(user);
 
-                if (user && user.password === this.user.password) {
+                if (loginresponse.status === 200) {
                     this.errorMessage = "";
                     localStorage.setItem("user-login-info", JSON.stringify(user))
                     this.$router.push("/User/Home");

@@ -4,7 +4,12 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  mounted() {
+    document.body.style.cursor = 'default';
+    document.body.setAttribute('contenteditable', 'false');
+    document.body.style.userSelect = 'none';
+  }
 }
 </script>
 
@@ -72,7 +77,6 @@ export default {
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-medium: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 
 .btn {
   position: relative;

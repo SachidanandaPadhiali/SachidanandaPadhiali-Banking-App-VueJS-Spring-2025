@@ -58,7 +58,8 @@ export default {
                 gender: '',
                 aadhar: '',
                 password: '',
-                confirmPassword: ''
+                confirmPassword: '',
+                bankAddress: ''
             },
             steps: ['SignupStep1', 'SignupStep2', 'SignupStep3']
         }
@@ -88,6 +89,7 @@ export default {
                         this.isfilled = false;
                     }
                 }
+                console.log(this.formData);
                 if (this.isfilled) {
                     let response = await axios.post("http://192.168.1.4.nip.io:8088/api/user", {
                         firstName: this.formData.firstName,
@@ -101,17 +103,14 @@ export default {
                         email: this.formData.email,
                         phoneNumber: this.formData.phoneNumber,
                         password: this.formData.password,
-                        confirmPassword: this.formData.confirmPassword
+                        confirmPassword: this.formData.confirmPassword,
+                        bank: this.formData.bankAddress
                     }, {
                         headers: { "Content-Type": "application/json" }
                     });
                     console.log(response.data.responseCode);
 
-                    if (response.data.responseCode === '001') {
-                        alert(response.data.responseMessage);
-                        this.$router.push("/Sign-In");
-                    }
-                    else if (response.data.responseCode === '002') {
+                    if (response.data.responseCode === '002') {
                         alert(`Sign Up successful for ${response.data.username || this.formData.firstName}`);
                         this.$router.push("/Sign-In");
                     }

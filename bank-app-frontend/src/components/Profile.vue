@@ -93,22 +93,6 @@
                                 </p>
                                 <svg-icon class="myicons" type="mdi" :path="gotosavings" />
                             </router-link>
-                            <CollapsDetails :title="'Savings Account\nAccount Balance: ₹' + user.bal"
-                                v-show="activeIndex === 2" id="accounts">
-                                <hr>
-                                <p><strong>Account Number:</strong> {{ user.accountNum }}</p>
-                                <p><strong>Balance:</strong> ₹ {{ user.bal }}</p>
-                                <p><strong>Status:</strong> Active</p>
-                                <CollapsDetails title="Show recent Transactions" v-show="activeIndex === 2"
-                                    id="accounts">
-                                    <hr>
-                                    <ul style="list-style: none; left:0;">
-                                        <li>🟢 Credited ₹5000 on 01-Jun</li>
-                                        <li>🔴 Debited ₹1200 on 03-Jun</li>
-                                    </ul>
-                                </CollapsDetails>
-
-                            </CollapsDetails>
                         </div>
                     </div>
                     <CollapsDetails title="Fixed Deposits" class="accdetails" v-show="activeIndex === 2" id="accounts">
@@ -373,6 +357,7 @@ export default {
     border: 2px solid var(--primary);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 20px;
+    padding: 0.3em 1em;
 }
 
 /*======= LEFT SECTION BUTTONS =======*/
@@ -485,7 +470,6 @@ export default {
     border: none;
     padding: 5px;
     border-radius: 50px;
-    cursor: pointer;
 }
 
 .success-btn.disabled-btn {

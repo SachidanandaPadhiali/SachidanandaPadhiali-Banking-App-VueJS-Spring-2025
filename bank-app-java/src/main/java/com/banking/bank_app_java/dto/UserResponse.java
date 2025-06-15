@@ -1,19 +1,18 @@
 package com.banking.bank_app_java.dto;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
-import com.banking.bank_app_java.entity.Banks;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRequests {
+public class UserResponse {
+
 	private String firstName;
 	private String lastName;
 	private String gender;
@@ -26,11 +25,11 @@ public class UserRequests {
 	
 	private String email;
 	private String phoneNumber;
-	private String password;
-
+	
+	private String accNo;
 	private BigDecimal accBalance;
-	//private String accStatus;
+	private String accStatus;
 	
+	private String ifsc;
 	private String bankAddress;
-	
 }

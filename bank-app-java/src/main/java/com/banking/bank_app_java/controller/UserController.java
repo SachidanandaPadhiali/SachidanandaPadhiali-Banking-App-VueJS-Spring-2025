@@ -1,14 +1,18 @@
 package com.banking.bank_app_java.controller;
 
 import com.banking.bank_app_java.dto.*;
+import com.banking.bank_app_java.entity.Banks;
 import com.banking.bank_app_java.entity.User;
+import com.banking.bank_app_java.entity.UserBank;
+import com.banking.bank_app_java.service.BankingService;
 import com.banking.bank_app_java.service.UserService;
+
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
 
 @CrossOrigin(
         origins = "http://192.168.1.4.nip.io:8080",
@@ -22,15 +26,36 @@ public class UserController {
     @Autowired
     UserService userService;
 
+	@Autowired
+	BankingService bankingService;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserRequests userRequests) {
         try {
             User user = userService.validateUser(userRequests.getEmail(), userRequests.getPassword());
-            if (user != null) {
-                return ResponseEntity.ok(user);
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-            }
+            UserBank accdetails = userService.getAccDetails(user.getId());
+            
+            UserResponse response = new UserResponse();
+			response.setFirstName(user.getFirstName());
+			response.setLastName(user.getLastName());
+			response.setEmail(user.getEmail());
+			response.setGender(user.getGender());
+			response.setAddressLine1(user.getAddressLine1());
+			response.setAddressLine2(user.getAddressLine2());
+			response.setCity(user.getCity());
+			response.setState(user.getState());
+			response.setPin(user.getPin());
+			
+			response.setEmail(user.getEmail());
+			response.setPhoneNumber(user.getPhoneNumber());
+			
+			response.setAccNo(accdetails.getAccNo());
+			response.setAccBalance(accdetails.getAccBalance());
+			response.setAccStatus(accdetails.getAccStatus());
+			response.setIfsc(accdetails.getBank().getIfsc());
+			response.setBankAddress(accdetails.getBank().getAddress());
+			
+			return ResponseEntity.ok(response);
         }catch (Exception ex) {
             // Log the full stack trace to console/logs:
             ex.printStackTrace();
@@ -47,7 +72,9 @@ public class UserController {
     }
 
     @GetMapping("/checkuser")
-    public BankResponse checkUserDuplicate(@RequestBody UserRequests userRequests) {
+    public BankResponse checkUserDuplicate(@RequestParam String email) {
+    	UserRequests userRequests = new UserRequests();
+    	userRequests.setEmail(email);
         return userService.checkUserDuplicate(userRequests);
     }
 
@@ -75,7 +102,12 @@ public class UserController {
 
     @PostMapping("/user/Transfer")
     public BankResponse transferAmount(@RequestBody Transfer transferRequest) {
-        return userService.transfer(transferRequest);
-    }
+		return userService.transfer(transferRequest);
+	}
+	
+	@GetMapping("/getIFSC")
+	public Banks getIfsc(Long Id) {
+		return bankingService.getIfsc(Id);
+	}
 
 }

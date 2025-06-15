@@ -69,27 +69,30 @@ export default {
     methods: {
         async validateStep() {
             const requiredFields = ['firstName', 'lastName', 'email', 'phoneNumber', 'gender'];
-            for (const field of requiredFields) {
-                if (!this.modelValue[field]) {
-                    this.errorMessage = `${field.replace(/([A-Z])/g, ' $1')} is required`;
-                    return false;
-                }
-            }
             try {
                 let response = await axios.get("http://192.168.1.4.nip.io:8088/api/checkuser", {
-                    email: this.localForm.email,
+                    params: { email: this.localForm.email }
                 }, {
                     headers: { "Content-Type": "application/json" }
                 });
                 console.log(response.data.responseCode);
 
                 if (response.data.responseCode === '001') {
+                    this.errorMessage = "User Email is already registered";
                     return false;
                 }
             } catch (error) {
                 console.error("Error signing up:", error);
             }
+            console.log(this.errorMessage);
             this.errorMessage = "";
+            console.log('errormessage = ',this.errorMessage);
+            for (const field of requiredFields) {
+                if (!this.modelValue[field]) {
+                    this.errorMessage = `${field.replace(/([A-Z])/g, ' $1')} is required`;
+                    return false;
+                }
+            }
             return true;
         }
     }
@@ -103,7 +106,7 @@ export default {
     font-family: inherit;
     font-size: 16px;
     background-color: white;
-    color: #333;
+    color: var(--accent);
     padding: 12px 20px 12px 20px;
     display: flex;
     align-items: center;

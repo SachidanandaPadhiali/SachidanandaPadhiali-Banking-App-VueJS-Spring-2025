@@ -42,7 +42,6 @@ export default {
 .collapsible-container {
     margin: 20px auto;
     background-color: #fff;
-    padding: 0.3em 1em;
 }
 
 .collapsible-header {
