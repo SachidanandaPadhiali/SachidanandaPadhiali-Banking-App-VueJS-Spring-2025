@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-import com.banking.bank_app_java.entity.Banks;
-
 @Data
 @Builder
 @AllArgsConstructor
