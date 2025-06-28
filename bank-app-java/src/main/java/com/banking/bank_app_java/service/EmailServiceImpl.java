@@ -66,6 +66,56 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	@Override
+	public void sendCreditEmail(EmailDetails emailDetails) {
+		try {
+			MimeMessage message = mailSender.createMimeMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+			helper.setFrom(senderEmail);
+			helper.setTo(emailDetails.getRecipient());
+
+			helper.setSubject(emailDetails.getSubject());
+			String htmlContent = "<!DOCTYPE html>" +
+					"<html>" +
+					"<head>" +
+					"<meta charset='UTF-8'>" +
+					"<style>" +
+					"  body { font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9; padding: 20px; }"
+					+
+					"  .email-container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; }"
+					+
+					"  h2 { color: #4CAF50; }" +
+					"  .details span { display: block; margin: 4px 0; }" +
+					"  .footer { margin-top: 20px; font-size: 12px; color: #777; }" +
+					"</style>" +
+					"</head>" +
+					"<body>" +
+					"<div class='email-container'>" +
+					"<h2>🎉 Good News! Your Account Has Been Credited</h2>" +
+					"<p>Hi [Customer Name],</p>" +
+					"<p>We’re happy to inform you that your account has been successfully credited.</p>" +
+					"<div class='details'>" +
+					"  <span><strong>Amount Credited:</strong> ₹[Amount]</span>" +
+					"  <span><strong>Transaction ID:</strong> [Transaction ID]</span>" +
+					"  <span><strong>Date:</strong> [Date]</span>" +
+					"</div>" +
+					"<p>You can log into your account anytime to view the updated balance.</p>" +
+					"<p>If you have any questions or need assistance, feel free to reach out—we’re here to help.</p>" +
+					"<p>Thanks for choosing us!</p>" +
+					"<div class='footer'>— [Your Company Name] | [Contact Details]</div>" +
+					"</div>" +
+					"</body>" +
+					"</html>";
+			helper.setText(htmlContent, true);
+
+			mailSender.send(message);
+			System.out.println("Email sent Successfully");
+		} catch (MailException | MessagingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
 	public void sendEmail(EmailDetails emailDetails) {
 		try {
 			SimpleMailMessage message = new SimpleMailMessage();

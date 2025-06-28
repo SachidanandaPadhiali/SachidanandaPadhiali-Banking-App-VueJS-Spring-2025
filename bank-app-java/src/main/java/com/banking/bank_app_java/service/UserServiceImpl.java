@@ -59,14 +59,6 @@ public class UserServiceImpl implements UserService {
 		UserBank mapping = UserBank.builder().user(savedUser).bank(getBank).accNo(AccountUtils.generateAccountNumber())
 				.accBalance(BigDecimal.ZERO).accStatus("ACTIVE").build();
 
-		System.out.println("====================");
-		System.out.println(getBank);
-		System.out.println("====================");
-		System.out.println(savedUser);
-		System.out.println("====================");
-		System.out.println(mapping);
-		System.out.println("====================");
-
 		mappingRepo.save(mapping);
 		/**
 		 * Send Email
@@ -155,8 +147,12 @@ public class UserServiceImpl implements UserService {
 		/**
 		 * Send Email
 		 */
+		EmailDetails emailDetails = EmailDetails.builder().recipient(userRequests.getEmail())
+				.subject("🎉 ACCOUNT CREATED.. " + userRequests.getFirstName() + " " + userRequests.getLastName())
+				.savedUser(savedUser).savedUserBank(mapping).build();
+
 		EmailDetails creditEmailDetails = EmailDetails.builder().recipient(userToCredit.getEmail())
-				.subject("ACCOUNT CREDITED..  " + userToCredit.getFirstName() + " " + userToCredit.getLastName())
+				.subject("🎉 ACCOUNT CREDITED..  " + userToCredit.getFirstName() + " " + userToCredit.getLastName())
 				.msgBody("Greetings! Your account has been credited with !\n" + crRequest.getAmount()
 						+ "Your current balance is \n" + userBank.getAccBalance())
 				.build();
@@ -172,7 +168,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public BankResponse debitAccount(CreditDebitRequest drRequest) {
-		// Check if Account Number is correct
+		// Check if Account Number is correct3
 		boolean isAccountExists = userBankRepo.existsByAccNo(drRequest.getAccountNumber());
 		if (!isAccountExists) {
 			return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_DOES_NOT_EXIST_CODE)
