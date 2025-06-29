@@ -147,16 +147,10 @@ public class UserServiceImpl implements UserService {
 		/**
 		 * Send Email
 		 */
-		EmailDetails emailDetails = EmailDetails.builder().recipient(userRequests.getEmail())
-				.subject("🎉 ACCOUNT CREATED.. " + userRequests.getFirstName() + " " + userRequests.getLastName())
-				.savedUser(savedUser).savedUserBank(mapping).build();
-
-		EmailDetails creditEmailDetails = EmailDetails.builder().recipient(userToCredit.getEmail())
+		CreditDebitEmail emailDetails = CreditDebitEmail.builder().recipient(userToCredit.getEmail())
 				.subject("🎉 ACCOUNT CREDITED..  " + userToCredit.getFirstName() + " " + userToCredit.getLastName())
-				.msgBody("Greetings! Your account has been credited with !\n" + crRequest.getAmount()
-						+ "Your current balance is \n" + userBank.getAccBalance())
-				.build();
-		emailService.sendEmail(creditEmailDetails);
+				.user(userToCredit).account(userBank).isCredit(1).amount(crRequest.getAmount()).build();
+		emailService.sendBalanceUpdateEmail(emailDetails);
 
 		return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_CREDITED_CODE)
 				.responseMessage(AccountUtils.ACCOUNT_CREDITED_MESSAGE)
@@ -191,15 +185,13 @@ public class UserServiceImpl implements UserService {
 		/**
 		 * Send Email
 		 */
-		EmailDetails debitEmailDetails = EmailDetails.builder().recipient(userToDebit.getEmail())
-				.subject("ACCOUNT DEBITED..  " + userToDebit.getFirstName() + " " + userToDebit.getLastName())
-				.msgBody("Your account has been Debited with !\n" + drRequest.getAmount() + "Your current balance is \n"
-						+ userBank.getAccBalance())
-				.build();
-		emailService.sendEmail(debitEmailDetails);
+		CreditDebitEmail emailDetails = CreditDebitEmail.builder().recipient(userToDebit.getEmail())
+				.subject("My Bank Balance Update..  " + userToDebit.getFirstName() + " " + userToDebit.getLastName())
+				.user(userToDebit).account(userBank).isCredit(0).amount(drRequest.getAmount()).build();
+		emailService.sendBalanceUpdateEmail(emailDetails);
 
-		return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_DEBITED_CODE)
-				.responseMessage(AccountUtils.ACCOUNT_DEBITED_MESSAGE)
+		return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_CREDITED_CODE)
+				.responseMessage(AccountUtils.ACCOUNT_CREDITED_MESSAGE)
 				.accountInfo(AccountInfo.builder().accNo(userBank.getAccNo())
 						.accName(userToDebit.getFirstName() + " " + userToDebit.getLastName())
 						.accBalance(userBank.getAccBalance()).build())

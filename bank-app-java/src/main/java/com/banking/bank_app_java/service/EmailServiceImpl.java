@@ -1,5 +1,6 @@
 package com.banking.bank_app_java.service;
 
+import com.banking.bank_app_java.dto.CreditDebitEmail;
 import com.banking.bank_app_java.dto.EmailDetails;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -10,6 +11,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -66,7 +69,7 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	@Override
-	public void sendCreditEmail(EmailDetails emailDetails) {
+	public void sendBalanceUpdateEmail(CreditDebitEmail emailDetails) {
 		try {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -75,38 +78,67 @@ public class EmailServiceImpl implements EmailService {
 			helper.setTo(emailDetails.getRecipient());
 
 			helper.setSubject(emailDetails.getSubject());
-			String htmlContent = "<!DOCTYPE html>" +
-					"<html>" +
-					"<head>" +
-					"<meta charset='UTF-8'>" +
-					"<style>" +
-					"  body { font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9; padding: 20px; }"
+
+			LocalDateTime now = LocalDateTime.now();
+			String formatted = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+			String creditHtmlContent = "<body style='font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9; padding: 20px;'>"
 					+
-					"  .email-container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; }"
+					"  <div style='max-width: 600px; margin: auto; background: #ffffff; padding: 20px; border-radius: 8px;'>"
 					+
-					"  h2 { color: #4CAF50; }" +
-					"  .details span { display: block; margin: 4px 0; }" +
-					"  .footer { margin-top: 20px; font-size: 12px; color: #777; }" +
-					"</style>" +
-					"</head>" +
-					"<body>" +
-					"<div class='email-container'>" +
-					"<h2>🎉 Good News! Your Account Has Been Credited</h2>" +
-					"<p>Hi [Customer Name],</p>" +
-					"<p>We’re happy to inform you that your account has been successfully credited.</p>" +
-					"<div class='details'>" +
-					"  <span><strong>Amount Credited:</strong> ₹[Amount]</span>" +
-					"  <span><strong>Transaction ID:</strong> [Transaction ID]</span>" +
-					"  <span><strong>Date:</strong> [Date]</span>" +
-					"</div>" +
-					"<p>You can log into your account anytime to view the updated balance.</p>" +
-					"<p>If you have any questions or need assistance, feel free to reach out—we’re here to help.</p>" +
-					"<p>Thanks for choosing us!</p>" +
-					"<div class='footer'>— [Your Company Name] | [Contact Details]</div>" +
-					"</div>" +
-					"</body>" +
-					"</html>";
-			helper.setText(htmlContent, true);
+					"    <h2 style='color: #4CAF50; margin-top: 0;'>🎉 Good News! Your Account Has Been Credited</h2>" +
+					"    <p>Hi " + emailDetails.getUser().getFirstName() + ",</p>" +
+					"    <p>We’re happy to inform you that your account has been successfully credited.</p>" +
+
+					"    <div style='margin-top: 15px;'>" +
+					"      <span style='display: block; margin: 4px 0;'><strong>Amount Credited:</strong> ₹"
+					+ emailDetails.getAmount() + "</span>"
+					+
+					"      <span style='display: block; margin: 4px 0;'><strong>Transaction ID:</strong> 1234</span>"
+					+
+					"      <span style='display: block; margin: 4px 0;'><strong>Date & Time:</strong> " + formatted
+					+ "</span>"
+					+
+					"      <span style='display: block; margin: 4px 0;'><strong>Your Current Balance:</strong> "
+					+ emailDetails.getAccount().getAccBalance() + "</span>" +
+					"    </div>" +
+
+					"    <p>You can log into your account anytime to view the updated balance.</p>" +
+					"    <p>If you have any questions or need assistance, feel free to reach out—we’re here to help.</p>"
+					+
+					"    <p>Thanks for choosing us!</p>" +
+					"    <div style='margin-top: 20px; font-size: 12px; color: #777;'>— My Bank | mybank@mybank.com</div>"
+					+
+					"  </div>" +
+					"</body>";
+
+			String debitHtmlContent = "<body style='font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9; padding: 20px;'>"
+					+ "  <div style='max-width: 600px; margin: auto; background: #ffffff; padding: 20px; border-radius: 8px;'>"
+					+ "    <h2 style='color: #F44336; margin-top: 0;'>🔔 Alert: A Debit Transaction Has Occurred</h2>"
+					+ "    <p>Hi " + emailDetails.getUser().getFirstName() + ",</p>"
+					+ "    <p>We’re writing to notify you that a debit transaction has been made from your account.</p>"
+
+					+ "    <div style='margin-top: 15px;'>"
+					+ "      <span style='display: block; margin: 4px 0;'><strong>Amount Debited:</strong> ₹"
+					+ emailDetails.getAmount() + "</span>"
+					+ "      <span style='display: block; margin: 4px 0;'><strong>Transaction ID:</strong> 5678</span>"
+					+ "      <span style='display: block; margin: 4px 0;'><strong>Date & Time:</strong> " + formatted
+					+ "</span>"
+					+ "      <span style='display: block; margin: 4px 0;'><strong>Remaining Balance:</strong> "
+					+ emailDetails.getAccount().getAccBalance() + "</span>"
+					+ "    </div>"
+
+					+ "    <p>Please review this transaction. If you have any concerns or did not authorize it, contact us immediately.</p>"
+					+ "    <p>Thank you for trusting us with your banking needs.</p>"
+					+ "    <div style='margin-top: 20px; font-size: 12px; color: #777;'>— My Bank | mybank@mybank.com</div>"
+					+ "  </div>"
+					+ "</body>";
+
+			if (emailDetails.getIsCredit() == 1) {
+				helper.setText(creditHtmlContent, true);
+			} else {
+				helper.setText(debitHtmlContent, true);
+			}
 
 			mailSender.send(message);
 			System.out.println("Email sent Successfully");
