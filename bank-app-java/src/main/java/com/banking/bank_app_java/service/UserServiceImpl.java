@@ -171,14 +171,13 @@ public class UserServiceImpl implements UserService {
 		UserBank userBank = userBankRepo.findByAccNo(drRequest.getAccountNumber());
 		User userToDebit = userRepo.findById(userBank.getUser().getId())
 				.orElseThrow(() -> new IllegalArgumentException("User not found"));
-		userBank.setAccBalance(userBank.getAccBalance().add(drRequest.getAmount()));
-		userRepo.save(userToDebit);
 
 		if (userBank.getAccBalance().compareTo(drRequest.getAmount()) < 0) {
 			return BankResponse.builder().responseCode(AccountUtils.INSUFFICIENT_BALANCE_CODE)
 					.responseMessage(AccountUtils.INSUFFICIENT_BALANCE_MESSAGE)
 					.accountInfo(AccountInfo.builder().accBalance(userBank.getAccBalance()).build()).build();
 		}
+
 		userBank.setAccBalance(userBank.getAccBalance().subtract(drRequest.getAmount()));
 		userBankRepo.save(userBank);
 		userRepo.save(userToDebit);
