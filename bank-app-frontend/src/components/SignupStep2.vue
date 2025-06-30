@@ -48,6 +48,7 @@ export default {
     components: { SvgIcon },
     data() {
         return {
+            apiUrl: `${process.env.VUE_APP_API_URL}/api`,
             pass: mdiLockOutline, checkpass: mdiLockCheckOutline,
             errorMessage: '', duplicateUser: '',
             bankAddresses: []
@@ -92,7 +93,7 @@ export default {
         },
         async fetchBankAddresses() {
             try {
-                const response = await axios.get('http://192.168.1.4.nip.io:8088/api/bank/addresses');
+                const response = await axios.get(`${this.apiUrl}//bank/addresses`);
                 this.bankAddresses = response.data;
             } catch (error) {
                 console.error('Error fetching addresses:', error);

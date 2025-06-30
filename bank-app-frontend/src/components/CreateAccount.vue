@@ -41,6 +41,7 @@ export default {
     },
     data() {
         return {
+            apiUrl: `${process.env.VUE_APP_API_URL}/api`,
             step: 1,
             errorMessage: '',
             isfilled: true,
@@ -91,7 +92,7 @@ export default {
                 }
                 console.log(this.formData);
                 if (this.isfilled) {
-                    let response = await axios.post("http://192.168.1.4.nip.io:8088/api/user", {
+                    let response = await axios.post(`${this.apiUrl}/user`, {
                         firstName: this.formData.firstName,
                         lastName: this.formData.lastName,
                         gender: this.formData.gender,

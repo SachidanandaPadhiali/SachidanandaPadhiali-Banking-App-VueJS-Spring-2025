@@ -27,6 +27,7 @@ export default {
   },
   data() {
     return {
+      apiUrl: `${process.env.VUE_APP_API_URL}/api`,
       selectedFile: null,
       uploadMessage: ""
     };
@@ -48,7 +49,7 @@ export default {
 
       try {
         await axios.post(
-          `http://192.168.1.4.nip.io:8088/api/users/${this.userId}/avatar`,
+          `${this.apiUrl}/users/${this.userId}/avatar`,
           formData,
           {
             headers: {

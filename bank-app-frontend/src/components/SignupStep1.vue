@@ -48,7 +48,10 @@ export default {
     name: "SignupStep1",
     components: { SvgIcon },
     data() {
-        return { per: mdiAccount, email: mdiEmail, ph: mdiPhone, errorMessage: '' }
+        return {
+            apiUrl: `${process.env.VUE_APP_API_URL}/api`,
+            per: mdiAccount, email: mdiEmail, ph: mdiPhone, errorMessage: ''
+        }
     },
     props: {
         modelValue: {
@@ -70,7 +73,7 @@ export default {
         async validateStep() {
             const requiredFields = ['firstName', 'lastName', 'email', 'phoneNumber', 'gender'];
             try {
-                let response = await axios.get("http://192.168.1.4.nip.io:8088/api/checkuser", {
+                let response = await axios.get(`${this.apiUrl}/checkuser`, {
                     params: { email: this.localForm.email }
                 }, {
                     headers: { "Content-Type": "application/json" }
@@ -86,7 +89,7 @@ export default {
             }
             console.log(this.errorMessage);
             this.errorMessage = "";
-            console.log('errormessage = ',this.errorMessage);
+            console.log('errormessage = ', this.errorMessage);
             for (const field of requiredFields) {
                 if (!this.modelValue[field]) {
                     this.errorMessage = `${field.replace(/([A-Z])/g, ' $1')} is required`;

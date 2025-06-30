@@ -79,6 +79,7 @@ export default {
     components: { SvgIcon, CollapsDetails },
     data() {
         return {
+            apiUrl: `${process.env.VUE_APP_API_URL}/api/user`,
             gotoprofile: mdiArrowLeftDropCircleOutline,
             less: mdiArrowUpDropCircleOutline,
             more: mdiArrowDownDropCircleOutline,
@@ -169,7 +170,7 @@ export default {
         async fetchBank() {
             console.log('User ID ::: ',this.user);
             try {
-                const bankDetails = await axios.get("http://192.168.1.4.nip.io:8088/api/user/getIFSC", {
+                const bankDetails = await axios.get(`${this.apiUrl}/getIFSC`, {
                     params: { accountNumber: this.user.id }
                 });
                 console.log('Bank Details ::: ',bankDetails.data);
@@ -180,7 +181,7 @@ export default {
         async fetchAccInfo() {
             try {
                 // Fetch user data from backend
-                const loginresponse = await axios.get("http://192.168.1.4.nip.io:8088/api/user/BalanceEnquiry", {
+                const loginresponse = await axios.get(`${this.apiUrl}/BalanceEnquiry`, {
                     params: { accountNumber: this.user.accountNum }
                 });
                 console.log(loginresponse.data.accountInfo.accBalance);

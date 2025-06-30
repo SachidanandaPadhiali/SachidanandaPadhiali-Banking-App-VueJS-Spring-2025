@@ -20,6 +20,7 @@ export default {
     },
     data() {
         return {
+            apiUrl: `${process.env.VUE_APP_API_URL}/api`,
             avatarUrl: null
         };
     },
@@ -28,7 +29,7 @@ export default {
             try {
                 // This endpoint returns image bytes, so set responseType to 'blob'
                 const response = await this.$axios.get(
-                    `http://192.168.1.4.nip.io:8088/api/users/${this.accountNum}/avatar`,
+                    `${this.apiUrl}/users/${this.accountNum}/avatar`,
                     { responseType: "blob" }
                 );
                 // Create a local object URL for the blob

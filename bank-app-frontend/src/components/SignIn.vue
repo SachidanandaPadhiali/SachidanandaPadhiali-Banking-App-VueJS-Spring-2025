@@ -55,6 +55,7 @@ export default {
     components: { SvgIcon },
     data() {
         return {
+            apiUrl: `${process.env.VUE_APP_API_URL}/api`,
             acc: mdiAccount,
             pass: mdiFormTextboxPassword,
             isSignIn: true,
@@ -84,7 +85,7 @@ export default {
         async handleSignIn() {
             try {
                 // Fetch user data from backend
-                const loginresponse = await axios.post("http://192.168.1.4.nip.io:8088/api/login", {
+                const loginresponse = await axios.post(`${this.apiUrl}/login`, {
                     email: this.user.email,
                     password: this.user.password
                 });

@@ -132,6 +132,7 @@ export default {
     components: { SvgIcon, UserAvatarDisplay, CollapsDetails },
     data() {
         return {
+            apiUrl: `${process.env.VUE_APP_API_URL}/api`,
             eye: mdiEyeCircle,
             gotosavings: mdiArrowRightDropCircle,
             cir: mdiArrowDownDropCircle,
@@ -206,7 +207,7 @@ export default {
 
             try {
                 await axios.post(
-                    `http://192.168.1.4.nip.io:8088/api/users/${this.user.accountNum}/avatar`,
+                    `${this.apiUrl}/users/${this.user.accountNum}/avatar`,
                     formData,
                     {
                         headers: {
@@ -252,7 +253,8 @@ export default {
         async fetchAccInfo() {
             try {
                 // Fetch user data from backend
-                const loginresponse = await axios.get("http://192.168.1.4.nip.io:8088/api/user/BalanceEnquiry", {
+                console.log(this.apiUrl);
+                const loginresponse = await axios.get(`${this.apiUrl}/user/BalanceEnquiry`, {
                     params: { accountNumber: this.user.accountNum }
                 });
                 this.user.bal = loginresponse.data.accountInfo.accBalance;
