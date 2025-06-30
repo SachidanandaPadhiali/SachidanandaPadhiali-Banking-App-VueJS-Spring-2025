@@ -32,4 +32,6 @@ public class UserResponse {
 	
 	private String ifsc;
 	private String bankAddress;
+        
+        private String lastLogIn;
 }

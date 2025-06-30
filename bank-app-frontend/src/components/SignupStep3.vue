@@ -39,9 +39,6 @@
         <p v-if="localForm.pin && !isPincodeValid(localForm.pin)" class="message error">
             Pincode should ONLY contain 6 digits.
         </p>
-        <p class="login-link">
-            Already have an account? <router-link to="/Sign-In" class="login-link">Log In</router-link>
-        </p>
 
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
 

@@ -14,7 +14,7 @@ public interface UserBankRepo extends JpaRepository<UserBank, Long> {
 	UserBank findByAccNo(String accNo);
 	Boolean existsByAccNo(String accNo);
 
-	@Query("SELECT u.bank.ifsc FROM UserBank u WHERE u.id = :id")
-	String searchIFSCById(@Param("id") Long id);
+	@Query("SELECT u.bank.ifsc FROM UserBank u WHERE u.accNo = :accountNumber")
+	String searchIFSCById(@Param("accountNumber") String accountNumber);
 
 }

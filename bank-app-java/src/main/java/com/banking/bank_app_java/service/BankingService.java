@@ -10,6 +10,6 @@ public interface BankingService {
 	public BankResponse newBank(String address);
 	public List<String> getAllAddresses();
 	public Banks getBankIdByAddress(String address);
-	public Banks getIfsc(Long id);
+	public Banks getIfsc(String accountNumber);
 
 }

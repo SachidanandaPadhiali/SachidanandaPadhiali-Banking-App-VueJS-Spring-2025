@@ -93,7 +93,7 @@ export default {
         },
         async fetchBankAddresses() {
             try {
-                const response = await axios.get(`${this.apiUrl}//bank/addresses`);
+                const response = await axios.get(`${this.apiUrl}/bank/addresses`);
                 this.bankAddresses = response.data;
             } catch (error) {
                 console.error('Error fetching addresses:', error);

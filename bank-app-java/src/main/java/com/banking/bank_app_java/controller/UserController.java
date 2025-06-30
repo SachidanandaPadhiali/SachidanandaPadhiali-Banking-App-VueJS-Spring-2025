@@ -6,6 +6,7 @@ import com.banking.bank_app_java.entity.User;
 import com.banking.bank_app_java.entity.UserBank;
 import com.banking.bank_app_java.service.BankingService;
 import com.banking.bank_app_java.service.UserService;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,7 @@ public class UserController {
 			
 			response.setEmail(user.getEmail());
 			response.setPhoneNumber(user.getPhoneNumber());
+                        response.setLastLogIn(user.getLastLogIn().toString());
 			
 			response.setAccNo(accdetails.getAccNo());
 			response.setAccBalance(accdetails.getAccBalance());
@@ -103,9 +105,8 @@ public class UserController {
 		return userService.transfer(transferRequest);
 	}
 	
-	@GetMapping("/getIFSC")
-	public Banks getIfsc(Long Id) {
-		return bankingService.getIfsc(Id);
-	}
-
+    @GetMapping("/getIFSC")
+    public Banks getIfsc(String accountNumber) {
+            return bankingService.getIfsc(accountNumber);
+    }
 }

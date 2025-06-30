@@ -8,247 +8,250 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-	@Autowired
-	UserRepo userRepo;
+    @Autowired
+    UserRepo userRepo;
 
-	@Autowired
-	BankRepo bankRepo;
+    @Autowired
+    BankRepo bankRepo;
 
-	@Autowired
-	UserBankRepo userBankRepo;
+    @Autowired
+    UserBankRepo userBankRepo;
 
-	@Autowired
-	EmailService emailService;
+    @Autowired
+    EmailService emailService;
 
-	@Autowired
-	private UserBankRepo mappingRepo;
+    @Autowired
+    private UserBankRepo mappingRepo;
 
-	@Override
-	public BankResponse createAccount(UserRequests userRequests) {
-		/**
-		 * Check if the user is already present if present return the code and show the
-		 * message in AccountUtils
-		 */
-		if (userRepo.existsByEmail(userRequests.getEmail())) {
-			return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_EXISTS_CODE)
-					.responseMessage(AccountUtils.ACCOUNT_EXISTS_MESSAGE).accountInfo(null) // the user who wanted to
-																							// create account does not
-																							// have any account
-																							// information
-					.build();
-		}
-		/**
-		 * Creating an account - saving a new user into the database
-		 */
-		User newUser = User.builder().firstName(userRequests.getFirstName()).lastName(userRequests.getLastName())
-				.gender(userRequests.getGender()).addressLine1(userRequests.getAddressLine1())
-				.addressLine2(userRequests.getAddressLine2()).city(userRequests.getCity())
-				.state(userRequests.getState()).pin(userRequests.getPin()).email(userRequests.getEmail())
-				.phoneNumber(String.valueOf(userRequests.getPhoneNumber())).password(userRequests.getPassword())
-				.build();
-		/**
-		 * Save the created User
-		 */
-		User savedUser = userRepo.save(newUser);
-		Banks getBank = bankRepo.findByAddress(userRequests.getBankAddress());
+    @Override
+    public BankResponse createAccount(UserRequests userRequests) {
+        /**
+         * Check if the user is already present if present return the code and
+         * show the message in AccountUtils
+         */
+        if (userRepo.existsByEmail(userRequests.getEmail())) {
+            return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_EXISTS_CODE)
+                    .responseMessage(AccountUtils.ACCOUNT_EXISTS_MESSAGE).accountInfo(null) // the user who wanted to
+                    // create account does not
+                    // have any account
+                    // information
+                    .build();
+        }
+        /**
+         * Creating an account - saving a new user into the database
+         */
+        User newUser = User.builder().firstName(userRequests.getFirstName()).lastName(userRequests.getLastName())
+                .gender(userRequests.getGender()).addressLine1(userRequests.getAddressLine1())
+                .addressLine2(userRequests.getAddressLine2()).city(userRequests.getCity())
+                .state(userRequests.getState()).pin(userRequests.getPin()).email(userRequests.getEmail())
+                .phoneNumber(String.valueOf(userRequests.getPhoneNumber())).password(userRequests.getPassword())
+                .build();
+        /**
+         * Save the created User
+         */
+        User savedUser = userRepo.save(newUser);
+        Banks getBank = bankRepo.findByAddress(userRequests.getBankAddress());
 
-		UserBank mapping = UserBank.builder().user(savedUser).bank(getBank).accNo(AccountUtils.generateAccountNumber())
-				.accBalance(BigDecimal.ZERO).accStatus("ACTIVE").build();
+        UserBank mapping = UserBank.builder().user(savedUser).bank(getBank).accNo(AccountUtils.generateAccountNumber())
+                .accBalance(BigDecimal.ZERO).accStatus("ACTIVE").build();
 
-		mappingRepo.save(mapping);
-		/**
-		 * Send Email
-		 */
-		EmailDetails emailDetails = EmailDetails.builder().recipient(userRequests.getEmail())
-				.subject("🎉 ACCOUNT CREATED.. " + userRequests.getFirstName() + " " + userRequests.getLastName())
-				.savedUser(savedUser).savedUserBank(mapping).build();
-		emailService.sendSignUpEmail(emailDetails);
+        mappingRepo.save(mapping);
+        /**
+         * Send Email
+         */
+        EmailDetails emailDetails = EmailDetails.builder().recipient(userRequests.getEmail())
+                .subject("🎉 ACCOUNT CREATED.. " + userRequests.getFirstName() + " " + userRequests.getLastName())
+                .savedUser(savedUser).savedUserBank(mapping).build();
+        emailService.sendSignUpEmail(emailDetails);
 
-		return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_CREATED_CODE)
-				.responseMessage(AccountUtils.ACCOUNT_CREATED_MESSAGE)
-				.accountInfo(AccountInfo.builder().accBalance(mapping.getAccBalance()).accNo(mapping.getAccNo())
-						.accName(savedUser.getFirstName() + " " + savedUser.getLastName()).build())
-				.build();
-	}
+        return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_CREATED_CODE)
+                .responseMessage(AccountUtils.ACCOUNT_CREATED_MESSAGE)
+                .accountInfo(AccountInfo.builder().accBalance(mapping.getAccBalance()).accNo(mapping.getAccNo())
+                        .accName(savedUser.getFirstName() + " " + savedUser.getLastName()).build())
+                .build();
+    }
 
-	@Override
-	public BankResponse checkUserDuplicate(UserRequests userRequests) {
-		if (userRepo.existsByEmail(userRequests.getEmail())) {
-			return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_EXISTS_CODE)
-					.responseMessage(AccountUtils.ACCOUNT_EXISTS_MESSAGE).accountInfo(null) // the user who wanted to
-																							// create account does not
-																							// have any account
-																							// information
-					.build();
-		}
-		return null;
-	}
+    @Override
+    public BankResponse checkUserDuplicate(UserRequests userRequests) {
+        if (userRepo.existsByEmail(userRequests.getEmail())) {
+            return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_EXISTS_CODE)
+                    .responseMessage(AccountUtils.ACCOUNT_EXISTS_MESSAGE).accountInfo(null) // the user who wanted to
+                    // information
+                    .build();
+        }
+        return null;
+    }
 
-	public User validateUser(String username, String password) {
-		User user = userRepo.findByEmail(username);
-		return (user != null && user.getPassword().equals(password)) ? user : null;
-	}
-	
-	public UserBank getAccDetails(Long id) {
-		return userBankRepo.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("User not found"));
-	}
+    public User validateUser(String username, String password) {
+        User user = userRepo.findByEmail(username);
+        if (user != null) {
+            user.setLastLogIn(LocalDateTime.now());
+            userRepo.save(user);
+        }
+        return (user != null && user.getPassword().equals(password)) ? user : null;
+    }
 
-	@Override
-	public BankResponse balanceEnquiry(EnquiryRequest bRequest) {
-		// Check if Account Number is correct
-		boolean isAccountExists = userBankRepo.existsByAccNo(bRequest.getAccountNumber());
-		if (!isAccountExists) {
-			return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_DOES_NOT_EXIST_CODE)
-					.responseMessage(AccountUtils.ACCOUNT_DOES_NOT_EXIST_MESSAGE).accountInfo(null).build();
-		}
-		UserBank userBank = userBankRepo.findByAccNo(bRequest.getAccountNumber());
-		User userAccFound = userRepo.findById(userBank.getUser().getId())
-				.orElseThrow(() -> new IllegalArgumentException("User not found"));
+    public UserBank getAccDetails(Long id) {
+        return userBankRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
 
-		return BankResponse.builder()
-				.accountInfo(AccountInfo.builder().accNo(userBank.getAccNo())
-						.accName(userAccFound.getFirstName() + " " + userAccFound.getLastName())
-						.accBalance(userBank.getAccBalance()).build())
-				.build();
-	}
+    @Override
+    public BankResponse balanceEnquiry(EnquiryRequest bRequest) {
+        // Check if Account Number is correct
+        boolean isAccountExists = userBankRepo.existsByAccNo(bRequest.getAccountNumber());
+        if (!isAccountExists) {
+            return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_DOES_NOT_EXIST_CODE)
+                    .responseMessage(AccountUtils.ACCOUNT_DOES_NOT_EXIST_MESSAGE).accountInfo(null).build();
+        }
+        UserBank userBank = userBankRepo.findByAccNo(bRequest.getAccountNumber());
+        User userAccFound = userRepo.findById(userBank.getUser().getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-	@Override
-	public String nameEnquiry(EnquiryRequest nRequest) {
-		// Check if Account Number is correct
-		boolean isAccountExists = userBankRepo.existsByAccNo(nRequest.getAccountNumber());
-		if (!isAccountExists) {
-			return AccountUtils.ACCOUNT_DOES_NOT_EXIST_MESSAGE;
-		}
-		UserBank userBank = userBankRepo.findByAccNo(nRequest.getAccountNumber());
-		User userAccFound = userRepo.findById(userBank.getUser().getId())
-				.orElseThrow(() -> new IllegalArgumentException("User not found"));
-		return ("Account Name: " + userAccFound.getFirstName() + " " + userAccFound.getLastName());
-	}
+        return BankResponse.builder()
+                .accountInfo(AccountInfo.builder().accNo(userBank.getAccNo())
+                        .accName(userAccFound.getFirstName() + " " + userAccFound.getLastName())
+                        .accBalance(userBank.getAccBalance()).build())
+                .build();
+    }
 
-	@Override
-	public BankResponse creditAccount(CreditDebitRequest crRequest) {
-		// Check if Account Number is correct
-		boolean isAccountExists = userBankRepo.existsByAccNo(crRequest.getAccountNumber());
-		if (!isAccountExists) {
-			return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_DOES_NOT_EXIST_CODE)
-					.responseMessage(AccountUtils.ACCOUNT_DOES_NOT_EXIST_MESSAGE).accountInfo(null).build();
-		}
-		UserBank userBank = userBankRepo.findByAccNo(crRequest.getAccountNumber());
-		User userToCredit = userRepo.findById(userBank.getUser().getId())
-				.orElseThrow(() -> new IllegalArgumentException("User not found"));
-		userBank.setAccBalance(userBank.getAccBalance().add(crRequest.getAmount()));
-		userBankRepo.save(userBank);
-		userRepo.save(userToCredit);
-		/**
-		 * Send Email
-		 */
-		CreditDebitEmail emailDetails = CreditDebitEmail.builder().recipient(userToCredit.getEmail())
-				.subject("🎉 ACCOUNT CREDITED..  " + userToCredit.getFirstName() + " " + userToCredit.getLastName())
-				.user(userToCredit).account(userBank).isCredit(1).amount(crRequest.getAmount()).build();
-		emailService.sendBalanceUpdateEmail(emailDetails);
+    @Override
+    public String nameEnquiry(EnquiryRequest nRequest) {
+        // Check if Account Number is correct
+        boolean isAccountExists = userBankRepo.existsByAccNo(nRequest.getAccountNumber());
+        if (!isAccountExists) {
+            return AccountUtils.ACCOUNT_DOES_NOT_EXIST_MESSAGE;
+        }
+        UserBank userBank = userBankRepo.findByAccNo(nRequest.getAccountNumber());
+        User userAccFound = userRepo.findById(userBank.getUser().getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return ("Account Name: " + userAccFound.getFirstName() + " " + userAccFound.getLastName());
+    }
 
-		return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_CREDITED_CODE)
-				.responseMessage(AccountUtils.ACCOUNT_CREDITED_MESSAGE)
-				.accountInfo(AccountInfo.builder().accNo(userBank.getAccNo())
-						.accName(userToCredit.getFirstName() + " " + userToCredit.getLastName())
-						.accBalance(userBank.getAccBalance()).build())
-				.build();
-	}
+    @Override
+    public BankResponse creditAccount(CreditDebitRequest crRequest) {
+        // Check if Account Number is correct
+        boolean isAccountExists = userBankRepo.existsByAccNo(crRequest.getAccountNumber());
+        if (!isAccountExists) {
+            return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_DOES_NOT_EXIST_CODE)
+                    .responseMessage(AccountUtils.ACCOUNT_DOES_NOT_EXIST_MESSAGE).accountInfo(null).build();
+        }
+        UserBank userBank = userBankRepo.findByAccNo(crRequest.getAccountNumber());
+        User userToCredit = userRepo.findById(userBank.getUser().getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        userBank.setAccBalance(userBank.getAccBalance().add(crRequest.getAmount()));
+        userBankRepo.save(userBank);
+        userRepo.save(userToCredit);
+        /**
+         * Send Email
+         */
+        CreditDebitEmail emailDetails = CreditDebitEmail.builder().recipient(userToCredit.getEmail())
+                .subject("🎉 ACCOUNT CREDITED..  " + userToCredit.getFirstName() + " " + userToCredit.getLastName())
+                .user(userToCredit).account(userBank).isCredit(1).amount(crRequest.getAmount()).build();
+        emailService.sendBalanceUpdateEmail(emailDetails);
 
-	@Override
-	public BankResponse debitAccount(CreditDebitRequest drRequest) {
-		// Check if Account Number is correct3
-		boolean isAccountExists = userBankRepo.existsByAccNo(drRequest.getAccountNumber());
-		if (!isAccountExists) {
-			return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_DOES_NOT_EXIST_CODE)
-					.responseMessage(AccountUtils.ACCOUNT_DOES_NOT_EXIST_MESSAGE).accountInfo(null).build();
-		}
-		UserBank userBank = userBankRepo.findByAccNo(drRequest.getAccountNumber());
-		User userToDebit = userRepo.findById(userBank.getUser().getId())
-				.orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_CREDITED_CODE)
+                .responseMessage(AccountUtils.ACCOUNT_CREDITED_MESSAGE)
+                .accountInfo(AccountInfo.builder().accNo(userBank.getAccNo())
+                        .accName(userToCredit.getFirstName() + " " + userToCredit.getLastName())
+                        .accBalance(userBank.getAccBalance()).build())
+                .build();
+    }
 
-		if (userBank.getAccBalance().compareTo(drRequest.getAmount()) < 0) {
-			return BankResponse.builder().responseCode(AccountUtils.INSUFFICIENT_BALANCE_CODE)
-					.responseMessage(AccountUtils.INSUFFICIENT_BALANCE_MESSAGE)
-					.accountInfo(AccountInfo.builder().accBalance(userBank.getAccBalance()).build()).build();
-		}
+    @Override
+    public BankResponse debitAccount(CreditDebitRequest drRequest) {
+        // Check if Account Number is correct3
+        boolean isAccountExists = userBankRepo.existsByAccNo(drRequest.getAccountNumber());
+        if (!isAccountExists) {
+            return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_DOES_NOT_EXIST_CODE)
+                    .responseMessage(AccountUtils.ACCOUNT_DOES_NOT_EXIST_MESSAGE).accountInfo(null).build();
+        }
+        UserBank userBank = userBankRepo.findByAccNo(drRequest.getAccountNumber());
+        User userToDebit = userRepo.findById(userBank.getUser().getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-		userBank.setAccBalance(userBank.getAccBalance().subtract(drRequest.getAmount()));
-		userBankRepo.save(userBank);
-		userRepo.save(userToDebit);
-		/**
-		 * Send Email
-		 */
-		CreditDebitEmail emailDetails = CreditDebitEmail.builder().recipient(userToDebit.getEmail())
-				.subject("My Bank Balance Update..  " + userToDebit.getFirstName() + " " + userToDebit.getLastName())
-				.user(userToDebit).account(userBank).isCredit(0).amount(drRequest.getAmount()).build();
-		emailService.sendBalanceUpdateEmail(emailDetails);
+        if (userBank.getAccBalance().compareTo(drRequest.getAmount()) < 0) {
+            return BankResponse.builder().responseCode(AccountUtils.INSUFFICIENT_BALANCE_CODE)
+                    .responseMessage(AccountUtils.INSUFFICIENT_BALANCE_MESSAGE)
+                    .accountInfo(AccountInfo.builder().accBalance(userBank.getAccBalance()).build()).build();
+        }
 
-		return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_CREDITED_CODE)
-				.responseMessage(AccountUtils.ACCOUNT_CREDITED_MESSAGE)
-				.accountInfo(AccountInfo.builder().accNo(userBank.getAccNo())
-						.accName(userToDebit.getFirstName() + " " + userToDebit.getLastName())
-						.accBalance(userBank.getAccBalance()).build())
-				.build();
-	}
+        userBank.setAccBalance(userBank.getAccBalance().subtract(drRequest.getAmount()));
+        userBankRepo.save(userBank);
+        userRepo.save(userToDebit);
+        /**
+         * Send Email
+         */
+        CreditDebitEmail emailDetails = CreditDebitEmail.builder().recipient(userToDebit.getEmail())
+                .subject("My Bank Balance Update..  " + userToDebit.getFirstName() + " " + userToDebit.getLastName())
+                .user(userToDebit).account(userBank).isCredit(0).amount(drRequest.getAmount()).build();
+        emailService.sendBalanceUpdateEmail(emailDetails);
 
-	@Override
-	public BankResponse transfer(Transfer transferRequest) {
-		boolean isSourceAccountExists = userBankRepo.existsByAccNo(transferRequest.getSourceAccount());
-		boolean isDestinationAccountExists = userBankRepo.existsByAccNo(transferRequest.getDestinationAccount());
-		if (!isSourceAccountExists || !isDestinationAccountExists) {
-			return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_DOES_NOT_EXIST_CODE)
-					.responseMessage(AccountUtils.ACCOUNT_DOES_NOT_EXIST_MESSAGE).accountInfo(null).build();
-		}
-		UserBank userFromBank = userBankRepo.findByAccNo(transferRequest.getSourceAccount());
-		User userFromTransfer = userRepo.findById(userFromBank.getUser().getId())
-				.orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_CREDITED_CODE)
+                .responseMessage(AccountUtils.ACCOUNT_CREDITED_MESSAGE)
+                .accountInfo(AccountInfo.builder().accNo(userBank.getAccNo())
+                        .accName(userToDebit.getFirstName() + " " + userToDebit.getLastName())
+                        .accBalance(userBank.getAccBalance()).build())
+                .build();
+    }
 
-		UserBank userToBank = userBankRepo.findByAccNo(transferRequest.getDestinationAccount());
-		User userToTransfer = userRepo.findById(userToBank.getUser().getId())
-				.orElseThrow(() -> new IllegalArgumentException("User not found"));
+    @Override
+    public BankResponse transfer(Transfer transferRequest) {
+        boolean isSourceAccountExists = userBankRepo.existsByAccNo(transferRequest.getSourceAccount());
+        boolean isDestinationAccountExists = userBankRepo.existsByAccNo(transferRequest.getDestinationAccount());
+        if (!isSourceAccountExists || !isDestinationAccountExists) {
+            return BankResponse.builder().responseCode(AccountUtils.ACCOUNT_DOES_NOT_EXIST_CODE)
+                    .responseMessage(AccountUtils.ACCOUNT_DOES_NOT_EXIST_MESSAGE).accountInfo(null).build();
+        }
+        UserBank userFromBank = userBankRepo.findByAccNo(transferRequest.getSourceAccount());
+        User userFromTransfer = userRepo.findById(userFromBank.getUser().getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-		if (userFromBank.getAccBalance().compareTo(transferRequest.getAmount()) < 0) {
-			return BankResponse.builder().responseCode(AccountUtils.INSUFFICIENT_BALANCE_CODE)
-					.responseMessage(AccountUtils.INSUFFICIENT_BALANCE_MESSAGE)
-					.accountInfo(AccountInfo.builder().accBalance(userFromBank.getAccBalance()).build()).build();
-		}
-		userFromBank.setAccBalance(userFromBank.getAccBalance().subtract(transferRequest.getAmount()));
-		userBankRepo.save(userFromBank);
-		userRepo.save(userFromTransfer);
-		/**
-		 * Send Email
-		 */
-		EmailDetails debitEmailDetails = EmailDetails.builder().recipient(userFromTransfer.getEmail())
-				.subject("ACCOUNT DEBITED..  " + userFromTransfer.getFirstName() + " " + userFromTransfer.getLastName())
-				.msgBody("Your account has been Debited with !\n" + transferRequest.getAmount()
-						+ "Your current balance is \n" + userFromBank.getAccBalance())
-				.build();
-		emailService.sendEmail(debitEmailDetails);
+        UserBank userToBank = userBankRepo.findByAccNo(transferRequest.getDestinationAccount());
+        User userToTransfer = userRepo.findById(userToBank.getUser().getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-		userToBank.setAccBalance(userToBank.getAccBalance().add(transferRequest.getAmount()));
-		userRepo.save(userToTransfer);
-		/**
-		 * Send Email
-		 */
-		EmailDetails creditEmailDetails = EmailDetails.builder().recipient(userToTransfer.getEmail())
-				.subject("ACCOUNT CREDITED..  " + userToTransfer.getFirstName() + " " + userToTransfer.getLastName())
-				.msgBody("Greetings! Your account has been credited with !\n" + transferRequest.getAmount()
-						+ "Your current balance is \n" + userToBank.getAccBalance())
-				.build();
-		emailService.sendEmail(creditEmailDetails);
+        if (userFromBank.getAccBalance().compareTo(transferRequest.getAmount()) < 0) {
+            return BankResponse.builder().responseCode(AccountUtils.INSUFFICIENT_BALANCE_CODE)
+                    .responseMessage(AccountUtils.INSUFFICIENT_BALANCE_MESSAGE)
+                    .accountInfo(AccountInfo.builder().accBalance(userFromBank.getAccBalance()).build()).build();
+        }
+        userFromBank.setAccBalance(userFromBank.getAccBalance().subtract(transferRequest.getAmount()));
+        userBankRepo.save(userFromBank);
+        userRepo.save(userFromTransfer);
+        /**
+         * Send Email
+         */
+        EmailDetails debitEmailDetails = EmailDetails.builder().recipient(userFromTransfer.getEmail())
+                .subject("ACCOUNT DEBITED..  " + userFromTransfer.getFirstName() + " " + userFromTransfer.getLastName())
+                .msgBody("Your account has been Debited with !\n" + transferRequest.getAmount()
+                        + "Your current balance is \n" + userFromBank.getAccBalance())
+                .build();
+        emailService.sendEmail(debitEmailDetails);
 
-		return BankResponse.builder().responseCode(AccountUtils.BALANCE_TRANSFERRED_CODE)
-				.responseMessage(AccountUtils.BALANCE_TRANSFERRED_MESSAGE)
-				.accountInfo(AccountInfo.builder().accNo(userToBank.getAccNo())
-						.accName(userFromTransfer.getFirstName() + " " + userFromTransfer.getLastName())
-						.accBalance(userToBank.getAccBalance()).build())
-				.build();
-	}
+        userToBank.setAccBalance(userToBank.getAccBalance().add(transferRequest.getAmount()));
+        userRepo.save(userToTransfer);
+        /**
+         * Send Email
+         */
+        EmailDetails creditEmailDetails = EmailDetails.builder().recipient(userToTransfer.getEmail())
+                .subject("ACCOUNT CREDITED..  " + userToTransfer.getFirstName() + " " + userToTransfer.getLastName())
+                .msgBody("Greetings! Your account has been credited with !\n" + transferRequest.getAmount()
+                        + "Your current balance is \n" + userToBank.getAccBalance())
+                .build();
+        emailService.sendEmail(creditEmailDetails);
+
+        return BankResponse.builder().responseCode(AccountUtils.BALANCE_TRANSFERRED_CODE)
+                .responseMessage(AccountUtils.BALANCE_TRANSFERRED_MESSAGE)
+                .accountInfo(AccountInfo.builder().accNo(userToBank.getAccNo())
+                        .accName(userFromTransfer.getFirstName() + " " + userFromTransfer.getLastName())
+                        .accBalance(userToBank.getAccBalance()).build())
+                .build();
+    }
 
 }

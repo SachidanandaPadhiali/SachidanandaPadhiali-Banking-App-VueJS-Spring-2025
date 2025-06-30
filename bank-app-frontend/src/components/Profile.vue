@@ -29,6 +29,7 @@
                                 <h4>{{ user.firstName }}</h4>
                                 <p class="text-secondary mb-1">{{ user.email }}</p>
                                 <p class="text-muted font-size-sm">{{ user.phoneNumber }}</p>
+                                <p class="text-secondary mb-1">{{ user.lastLogIn }}</p>
                             </div>
                         </div>
                         <div class="list-group list-group-flush text-center mt-4">
@@ -161,7 +162,8 @@ export default {
                 state: '',
                 country: '',
                 pin: '',
-                gender: ''
+                gender: '',
+                lastLogIn: ''
             }
         }
     },
@@ -180,6 +182,7 @@ export default {
                 this.user.email = userData.email;
                 this.user.phoneNumber = userData.phoneNumber;
                 this.user.accountNum = userData.accNo;
+                this.user.lastLogIn = userData.lastLogIn;
             } catch (error) {
                 console.error("Error!! parsing user data:", error);
             }
@@ -188,6 +191,20 @@ export default {
         }
         this.fetchAddresses();
         this.fetchAccInfo();
+    },
+    computed: {
+        formattedDate() {
+            const date = new Date(this.user.lastLogIn); // Create a Date object
+            return date.toLocaleString('en-US', {
+                weekday: 'long',  // "Monday"
+                year: 'numeric',  // "2025"
+                month: 'long',    // "June"
+                day: 'numeric',   // "30"
+                hour: '2-digit',  // "11 PM"
+                minute: '2-digit', // "54"
+                second: '2-digit'  // "19"
+            }); // Format it using the browser's locale
+        }
     },
     methods: {
         onImageSelected(event) {
@@ -253,7 +270,7 @@ export default {
         async fetchAccInfo() {
             try {
                 // Fetch user data from backend
-                console.log(this.apiUrl);
+
                 const loginresponse = await axios.get(`${this.apiUrl}/user/BalanceEnquiry`, {
                     params: { accountNumber: this.user.accountNum }
                 });

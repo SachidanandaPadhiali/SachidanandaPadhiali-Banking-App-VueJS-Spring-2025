@@ -54,11 +54,12 @@ public class User {
 	private String password;
 	
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private UserBank userBank;
+        private UserBank userBank;
 	
 	@CreationTimestamp
 	private LocalDateTime createdAt;
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
-
+        
+        private LocalDateTime lastLogIn;
 }

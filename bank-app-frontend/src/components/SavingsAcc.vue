@@ -79,7 +79,7 @@ export default {
     components: { SvgIcon, CollapsDetails },
     data() {
         return {
-            apiUrl: `${process.env.VUE_APP_API_URL}/api/user`,
+            apiUrl: `${process.env.VUE_APP_API_URL}/api`,
             gotoprofile: mdiArrowLeftDropCircleOutline,
             less: mdiArrowUpDropCircleOutline,
             more: mdiArrowDownDropCircleOutline,
@@ -126,7 +126,7 @@ export default {
         if (storedData) {
             try {
                 const userData = JSON.parse(storedData);
-                console.log(`user : `, userData.id);
+                
                 this.user.id = userData.id;
                 this.user.firstName = userData.firstName;
                 this.user.fullname = userData.firstName + " " + userData.lastName;
@@ -135,7 +135,7 @@ export default {
                 this.user.accountNum = userData.accNo;
                 this.user.ifsc = userData.ifsc,
                 this.user.branch = userData.bankAddress
-                console.log("Welcome, " + this.user);
+                
             } catch (error) {
                 console.error("Error!! parsing user data:", error);
             }
@@ -168,12 +168,12 @@ export default {
             }
         },
         async fetchBank() {
-            console.log('User ID ::: ',this.user);
+            
             try {
-                const bankDetails = await axios.get(`${this.apiUrl}/getIFSC`, {
-                    params: { accountNumber: this.user.id }
+                await axios.get(`${this.apiUrl}/getIFSC`, {
+                    params: { accountNumber: this.user.accountNum }
                 });
-                console.log('Bank Details ::: ',bankDetails.data);
+                
             } catch (error) {
                 console.error('Error fetching addresses:', error);
             }
@@ -181,10 +181,10 @@ export default {
         async fetchAccInfo() {
             try {
                 // Fetch user data from backend
-                const loginresponse = await axios.get(`${this.apiUrl}/BalanceEnquiry`, {
+                const loginresponse = await axios.get(`${this.apiUrl}/user/BalanceEnquiry`, {
                     params: { accountNumber: this.user.accountNum }
                 });
-                console.log(loginresponse.data.accountInfo.accBalance);
+                
                 this.user.bal = loginresponse.data.accountInfo.accBalance;
             } catch (error) {
                 if (error.response && error.response.status === 401) {

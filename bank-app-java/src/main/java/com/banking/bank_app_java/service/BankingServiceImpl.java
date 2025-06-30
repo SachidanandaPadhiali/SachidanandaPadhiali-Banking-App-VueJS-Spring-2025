@@ -40,8 +40,8 @@ public class BankingServiceImpl implements BankingService {
 	}
 
 	@Override
-	public Banks getIfsc(Long Id) {
-		String ifsc = userBankRepo.searchIFSCById(Id); 
+	public Banks getIfsc(String accountNumber) {
+            String ifsc = userBankRepo.searchIFSCById(accountNumber); 
 	    Banks newBank = bankRepo.findByIfsc(ifsc);
 	    return newBank;	    
 	}
