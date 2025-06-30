@@ -86,13 +86,19 @@
                             <h5>Account Information</h5>
                             <hr>
                             <h3>{{ user.fullname }}</h3>
-                            <router-link to="/User/savings" class="savingsnav">
-                                <p>
-                                    {{ 'Savings Account' }} <br>
-                                    {{ 'Account Balance: ₹ ' + user.bal }}
-                                </p>
-                                <svg-icon class="myicons" type="mdi" :path="gotosavings" />
-                            </router-link>
+                            <div class="savingsnav">
+                                <div class="savingsnav1">
+                                    Savings Account<br>
+                                    <p>Account Balance</p>
+                                    <span v-if="showBal" @click="showBalance()">₹{{ user.bal }}</span>
+                                    <span v-else @click="showBalance()">XX XXX <svg-icon class="myicons"
+                                            style="margin-left: 20px;" type="mdi" :path="eye" />
+                                    </span>
+                                </div>
+
+                                <router-link to="/User/savings"><svg-icon class="myicons" type="mdi"
+                                        :path="gotosavings" /></router-link>
+                            </div>
                         </div>
                     </div>
                     <CollapsDetails title="Fixed Deposits" class="accdetails" v-show="activeIndex === 2" id="accounts">
@@ -116,7 +122,7 @@
 
 <script>
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiArrowRightDropCircle, mdiAccount, mdiArrowDownDropCircle, mdiBook, mdiLogout, mdiHome, mdiWallet } from '@mdi/js';
+import { mdiEyeCircle, mdiArrowRightDropCircle, mdiAccount, mdiArrowDownDropCircle, mdiBook, mdiLogout, mdiHome, mdiWallet } from '@mdi/js';
 import axios from 'axios';
 import UserAvatarDisplay from './UserAvatarDisplay.vue';
 import CollapsDetails from './Collaps.vue';
@@ -126,6 +132,7 @@ export default {
     components: { SvgIcon, UserAvatarDisplay, CollapsDetails },
     data() {
         return {
+            eye: mdiEyeCircle,
             gotosavings: mdiArrowRightDropCircle,
             cir: mdiArrowDownDropCircle,
             acc: mdiAccount,
@@ -139,6 +146,7 @@ export default {
             previewUrl: null,
             selectedFile: null,
             uploadMessage: "",
+            showBal: false,
             user: {
                 accountNum: '',
                 bal: '',
@@ -165,13 +173,12 @@ export default {
         if (storedData) {
             try {
                 const userData = JSON.parse(storedData);
-                console.log(`user : `, userData.id);
+
                 this.user.firstName = userData.firstName;
                 this.user.fullname = userData.firstName + " " + userData.lastName;
                 this.user.email = userData.email;
                 this.user.phoneNumber = userData.phoneNumber;
                 this.user.accountNum = userData.accNo;
-                console.log("Welcome, " + this.user);
             } catch (error) {
                 console.error("Error!! parsing user data:", error);
             }
@@ -223,6 +230,9 @@ export default {
         showAcc() {
             this.activeIndex = 2;
         },
+        showBalance() {
+            this.showBal = true;
+        },
         fetchAddresses() {
             try {
                 const storedData = localStorage.getItem("user-login-info");
@@ -242,11 +252,9 @@ export default {
         async fetchAccInfo() {
             try {
                 // Fetch user data from backend
-                console.log(this.user.accountNum);
                 const loginresponse = await axios.get("http://192.168.1.4.nip.io:8088/api/user/BalanceEnquiry", {
                     params: { accountNumber: this.user.accountNum }
                 });
-                console.log(loginresponse.data.accountInfo.accBalance);
                 this.user.bal = loginresponse.data.accountInfo.accBalance;
             } catch (error) {
                 if (error.response && error.response.status === 401) {
@@ -312,6 +320,22 @@ export default {
     color: var(--dark-text);
 }
 
+.savingsnav1 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-weight: var(--font-semi-bold);
+    font-size: var(--normal-font-size);
+    color: var(--dark-text);
+}
+
+.savingsnav1 p {
+    color: var(--light-text);
+    font-weight: var(--font-slim);
+    font-size: var(--smaller-font-size);
+    margin-bottom: 0;
+}
+
 .savingsnav:hover {
     text-decoration: none;
 }
@@ -333,7 +357,7 @@ export default {
 .detailscard {
     border: 2px solid var(--primary);
     border-radius: 20px;
-    padding: 2em;
+    padding: 0.5em;
 }
 
 @media (max-width: 768px) {

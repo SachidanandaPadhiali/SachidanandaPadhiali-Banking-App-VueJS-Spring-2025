@@ -7,8 +7,6 @@ import com.banking.bank_app_java.entity.UserBank;
 import com.banking.bank_app_java.service.BankingService;
 import com.banking.bank_app_java.service.UserService;
 
-import java.math.BigDecimal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

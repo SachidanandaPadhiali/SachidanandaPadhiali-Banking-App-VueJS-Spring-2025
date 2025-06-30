@@ -55,6 +55,7 @@ export default {
   --smaller-font-size: 0.7rem;
 
   /*===== Font weight =====*/
+  --font-slim: 200;
   --font-medium: 400;
   --font-semi-bold: 550;
   --font-bold: 700;
