@@ -1,7 +1,91 @@
 <template>
     <div class="container">
         <div class="main-body">
-            <div class="row">
+            <div v-if="isMobileScreen">
+                <button class="hamburger-icon" @click="toggleMenu">
+                    ☰ <!-- You can replace this with any icon of your choice -->
+                </button>
+                <!-- Mobile Navigation -->
+                <div v-if="isMobileNavOpen" class="mobile-nav-overlay" @click="closeMenu">
+                    <div class="mobile-nav-content" @click.stop>
+                        <!-- Close Button to close the navigation -->
+                        <svg-icon style="float:right;" type="mdi" :path="close" @click="closeMenu" />
+
+                        <div class="d-flex flex-column align-items-center text-center">
+                            <div class="mt-3">
+                                <h4>{{ user.firstName }}</h4>
+                                <p class="text-secondary mb-1">{{ user.email }}</p>
+                                <p class="text-muted font-size-sm">{{ user.phoneNumber }}</p>
+                                <p class="text-secondary mb-1">{{ formattedDate }}</p>
+                            </div>
+                        </div>
+                        <div class="list-group list-group-flush text-center mt-4">
+                            <a href="#" @click="goToHome" class="btn mybtn">
+                                <svg-icon type="mdi" :path="home" />
+                                HomePage
+                            </a>
+                            <a href="#" @click="logout" class="btn mybtn">
+                                <svg-icon type="mdi" :path="logouticon" />
+                                Sign out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <CollapsDetails title="Personal Details">
+                    <div id="profileDetails" class="detailscard">
+                        <div class="mycard-body">
+                            <h5>Profile Information</h5>
+                            <hr>
+                            <h3>{{ user.fullname }}</h3>
+                            <p><strong>Email:</strong> {{ user.email }}</p>
+                            <p><strong>Phone No.:</strong> {{ user.phoneNumber }}</p>
+                        </div>
+                        <div class="mycard-body">
+                            <h5>Address Book</h5>
+                            <hr>
+                            <p>{{ user.addressLine1 }}, {{ user.addressLine2 }}, {{ user.city }}</p>
+                            <p>{{ user.state }} - {{ user.pin }}</p>
+                            <p>Mobile: {{ user.phoneNumber }}</p>
+                        </div>
+                    </div>
+                </CollapsDetails>
+
+                <div id="accounts" class="detailscard">
+                    <div class="mycard-body">
+                        <h5>Account Information</h5>
+                        <hr>
+                        <h3>{{ user.fullname }}</h3>
+                        <div class="savingsnav">
+                            <div class="savingsnav1">
+                                Savings Account<br>
+                                <p>Account Balance</p>
+                                <span v-if="showBal" @click="showBalance()">₹{{ user.bal }}</span>
+                                <span v-else @click="showBalance()">XX XXX <svg-icon class="myicons"
+                                        style="margin-left: 20px;" type="mdi" :path="eye" />
+                                </span>
+                            </div>
+
+                            <router-link to="/User/savings"><svg-icon class="myicons" type="mdi" style="margin: 20px;"
+                                    :path="gotosavings" /></router-link>
+                        </div>
+                    </div>
+                </div>
+
+                <CollapsDetails title="Fixed Deposits" id="accounts">
+                    <p><strong>Account Number:</strong> 1234567890</p>
+                    <p><strong>Balance:</strong> ₹0.00</p>
+                    <p><strong>Status:</strong> Active</p>
+                </CollapsDetails>
+                <CollapsDetails title="Recurring Deposits" id="accounts">
+                    <ul>
+                        <li>🟢 Credited ₹5000 on 01-Jun</li>
+                        <li>🔴 Debited ₹1200 on 03-Jun</li>
+                    </ul>
+                </CollapsDetails>
+
+            </div>
+            <div v-else class="row">
                 <!-- Sidebar -->
                 <div class="col-md-4">
                     <div class="mycard">
@@ -29,7 +113,7 @@
                                 <h4>{{ user.firstName }}</h4>
                                 <p class="text-secondary mb-1">{{ user.email }}</p>
                                 <p class="text-muted font-size-sm">{{ user.phoneNumber }}</p>
-                                <p class="text-secondary mb-1">{{ user.lastLogIn }}</p>
+                                <p class="text-secondary mb-1">{{ formattedDate }}</p>
                             </div>
                         </div>
                         <div class="list-group list-group-flush text-center mt-4">
@@ -97,7 +181,7 @@
                                     </span>
                                 </div>
 
-                                <router-link to="/User/savings"><svg-icon class="myicons" type="mdi"
+                                <router-link to="/User/savings"><svg-icon class="myicons" type="mdi" style="padding: 10px;"
                                         :path="gotosavings" /></router-link>
                             </div>
                         </div>
@@ -117,13 +201,14 @@
 
                 </div>
             </div>
+
         </div>
     </div>
 </template>
 
 <script>
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiEyeCircle, mdiArrowRightDropCircle, mdiAccount, mdiArrowDownDropCircle, mdiBook, mdiLogout, mdiHome, mdiWallet } from '@mdi/js';
+import { mdiEyeCircle, mdiCloseCircle, mdiArrowRightDropCircle, mdiAccount, mdiArrowDownDropCircle, mdiBook, mdiLogout, mdiHome, mdiWallet } from '@mdi/js';
 import axios from 'axios';
 import UserAvatarDisplay from './UserAvatarDisplay.vue';
 import CollapsDetails from './Collaps.vue';
@@ -133,10 +218,13 @@ export default {
     components: { SvgIcon, UserAvatarDisplay, CollapsDetails },
     data() {
         return {
+            windowWidth: window.innerWidth,
+            isMobileNavOpen: false,
             apiUrl: `${process.env.VUE_APP_API_URL}/api`,
             eye: mdiEyeCircle,
             gotosavings: mdiArrowRightDropCircle,
             cir: mdiArrowDownDropCircle,
+            close: mdiCloseCircle,
             acc: mdiAccount,
             add: mdiBook,
             logouticon: mdiLogout,
@@ -193,20 +281,39 @@ export default {
         this.fetchAccInfo();
     },
     computed: {
+        isMobileScreen() {
+            return this.windowWidth <= 768; // Mobile screens typically have widths of 768px or less
+        },
         formattedDate() {
-            const date = new Date(this.user.lastLogIn); // Create a Date object
-            return date.toLocaleString('en-US', {
-                weekday: 'long',  // "Monday"
-                year: 'numeric',  // "2025"
-                month: 'long',    // "June"
-                day: 'numeric',   // "30"
-                hour: '2-digit',  // "11 PM"
-                minute: '2-digit', // "54"
-                second: '2-digit'  // "19"
-            }); // Format it using the browser's locale
+            const logInTime = new Date(this.user.lastLogIn); // Create a Date object
+            return logInTime.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
         }
     },
+    created() {
+        // Add event listener for window resize
+        window.addEventListener('resize', this.handleResize);
+    },
+    beforeUnmount() {
+        // Clean up the event listener when the component is destroyed
+        window.removeEventListener('resize', this.handleResize);
+    },
     methods: {
+        handleResize() {
+            this.windowWidth = window.innerWidth;
+        },
+        toggleMenu() {
+            this.isMobileNavOpen = !this.isMobileNavOpen;
+        },
+        // Close the mobile navigation
+        closeMenu() {
+            this.isMobileNavOpen = false;
+        },
         onImageSelected(event) {
             const file = event.target.files[0];
             if (file && file.type.startsWith("image/")) {
@@ -312,6 +419,51 @@ export default {
     white-space: pre-line;
 }
 
+.hamburger-icon {
+    font-size: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    /* Make sure it's on top of other content */
+}
+
+/* Full screen overlay when the mobile menu is open */
+.mobile-nav-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Overlay background */
+    display: flex;
+    justify-content: flex-end;
+    /* Align the navigation to the right */
+    z-index: 1000;
+    /* Ensure it's on top */
+}
+
+.mobile-nav-content {
+    background-color: #fff;
+    width: 80%;
+    height: 100%;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    /* Smooth sliding effect */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.mobile-nav-overlay .mobile-nav-content {
+    transform: translateX(0);
+}
+
 /* ............/navbar/............ */
 .navprofile {
     display: flex;
@@ -346,6 +498,7 @@ export default {
     font-weight: var(--font-semi-bold);
     font-size: var(--normal-font-size);
     color: var(--dark-text);
+    padding: 5px 20px;
 }
 
 .savingsnav1 p {
@@ -435,6 +588,14 @@ export default {
 
 .mybtn.active:hover {
     transition: background 0.3s ease-in-out;
+}
+
+@media (max-width: 900px) {
+    .mybtn {
+        padding: 5px;
+        min-width: 100%;
+    }
+
 }
 
 .list-group-item {
