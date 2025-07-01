@@ -33,15 +33,12 @@
                 </div>
 
                 <CollapsDetails title="Personal Details">
-                    <div id="profileDetails" class="detailscard">
+                    <div class="accdetails">
                         <div class="mycard-body">
-                            <h5>Profile Information</h5>
-                            <hr>
-                            <h3>{{ user.fullname }}</h3>
+                            <h4>{{ user.fullname }}</h4>
                             <p><strong>Email:</strong> {{ user.email }}</p>
                             <p><strong>Phone No.:</strong> {{ user.phoneNumber }}</p>
-                        </div>
-                        <div class="mycard-body">
+                            <hr>
                             <h5>Address Book</h5>
                             <hr>
                             <p>{{ user.addressLine1 }}, {{ user.addressLine2 }}, {{ user.city }}</p>
@@ -51,7 +48,7 @@
                     </div>
                 </CollapsDetails>
 
-                <div id="accounts" class="detailscard">
+                <div class="detailscard">
                     <div class="mycard-body">
                         <h5>Account Information</h5>
                         <hr>
@@ -181,7 +178,7 @@
                                     </span>
                                 </div>
 
-                                <router-link to="/User/savings"><svg-icon class="myicons" type="mdi" style="padding: 10px;"
+                                <router-link to="/User/savings"><svg-icon class="myicons" type="mdi"
                                         :path="gotosavings" /></router-link>
                             </div>
                         </div>
@@ -532,23 +529,6 @@ export default {
     padding: 0.5em;
 }
 
-@media (max-width: 768px) {
-    .mycard {
-        margin-bottom: var(--mb-2);
-    }
-
-}
-
-@media (max-width: 500px) {
-    .mycard {
-        margin-bottom: var(--mb-2);
-    }
-
-    .detailscard {
-        padding: 0.2em;
-    }
-}
-
 .accdetails {
     border: 2px solid var(--primary);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -588,14 +568,6 @@ export default {
 
 .mybtn.active:hover {
     transition: background 0.3s ease-in-out;
-}
-
-@media (max-width: 900px) {
-    .mybtn {
-        padding: 5px;
-        min-width: 100%;
-    }
-
 }
 
 .list-group-item {
@@ -690,5 +662,36 @@ export default {
     padding: 5px;
     border-radius: 50px;
     cursor: pointer;
+}
+
+@media (max-width: 900px) {
+    .mybtn {
+        padding: 5px;
+        min-width: 100%;
+    }
+
+}
+
+@media (max-width: 768px) {
+    .mycard {
+        margin-bottom: var(--mb-2);
+    }
+
+}
+
+@media (max-width: 500px) {
+    .mycard {
+        margin-bottom: var(--mb-2);
+    }
+
+    .detailscard {
+        padding: 0.5em;
+    }
+
+    .accdetails {
+        border: none;
+        border-bottom: 3px solid var(--primary);
+        border-radius: 5px;
+    }
 }
 </style>

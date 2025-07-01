@@ -109,4 +109,9 @@ public class UserController {
     public Banks getIfsc(String accountNumber) {
             return bankingService.getIfsc(accountNumber);
     }
+    
+    @GetMapping("/getIFSC")
+    public Banks getTransactions(String accountNumber) {
+            return userService.getTransactions(accountNumber);
+    }
 }

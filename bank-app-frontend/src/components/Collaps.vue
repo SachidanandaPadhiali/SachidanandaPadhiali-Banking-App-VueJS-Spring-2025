@@ -48,6 +48,7 @@ export default {
     display: flex;
     justify-content: space-between;
     cursor: pointer;
+    margin: 20px auto;
     font-weight: var(--font-semi-bold);
     font-size: var(--normal-font-size);
     color: var(--dark-text);
