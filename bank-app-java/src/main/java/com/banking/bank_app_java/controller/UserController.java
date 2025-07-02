@@ -1,12 +1,10 @@
 package com.banking.bank_app_java.controller;
 
 import com.banking.bank_app_java.dto.*;
-import com.banking.bank_app_java.entity.Banks;
-import com.banking.bank_app_java.entity.User;
-import com.banking.bank_app_java.entity.UserBank;
+import com.banking.bank_app_java.entity.*;
 import com.banking.bank_app_java.service.BankingService;
 import com.banking.bank_app_java.service.UserService;
-import java.time.LocalDateTime;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,9 +108,9 @@ public class UserController {
     public Banks getIfsc(String accountNumber) {
             return bankingService.getIfsc(accountNumber);
     }
-    
+
     @GetMapping("/getTxs")
-    public List<TransactionsDTO> getTransactions(String accountNumber) {
+    public List<Transactions> getTransactions(@RequestParam("accountNumber") String accountNumber) {
             return userService.getTransactions(accountNumber);
     }
 }

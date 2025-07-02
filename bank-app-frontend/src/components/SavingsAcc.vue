@@ -99,21 +99,10 @@ export default {
                 email: '',
                 phoneNumber: '',
                 nominee: '',
-                ifsc:'',
-                branch:''
+                ifsc: '',
+                branch: ''
             },
-            allTransactions: [
-                "Transaction 1", "Transaction 2", "Transaction 3", "Transaction 4", "Transaction 5",
-                "Transaction 6", "Transaction 7", "Transaction 8", "Transaction 9", "Transaction 10",
-                "Transaction 11", "Transaction 12", "Transaction 13", "Transaction 14", "Transaction 15",
-                "Transaction 16", "Transaction 17", "Transaction 18", "Transaction 19", "Transaction 20",
-                "Transaction 21", "Transaction 22", "Transaction 23", "Transaction 24", "Transaction 25",
-                "Transaction 26", "Transaction 27", "Transaction 28", "Transaction 29", "Transaction 30",
-                "Transaction 11", "Transaction 12", "Transaction 13", "Transaction 14", "Transaction 15",
-                "Transaction 16", "Transaction 17", "Transaction 18", "Transaction 19", "Transaction 20",
-                "Transaction 21", "Transaction 22", "Transaction 23", "Transaction 24", "Transaction 25",
-                "Transaction 26", "Transaction 27", "Transaction 28", "Transaction 29", "Transaction 30"
-            ],
+            allTransactions: [],
             displayedTransactions: [],
             recordsToShow: 10,
             recordsToDedut: 20,
@@ -126,7 +115,7 @@ export default {
         if (storedData) {
             try {
                 const userData = JSON.parse(storedData);
-                
+
                 this.user.id = userData.id;
                 this.user.firstName = userData.firstName;
                 this.user.fullname = userData.firstName + " " + userData.lastName;
@@ -134,8 +123,8 @@ export default {
                 this.user.phoneNumber = userData.phoneNumber;
                 this.user.accountNum = userData.accNo;
                 this.user.ifsc = userData.ifsc,
-                this.user.branch = userData.bankAddress
-                
+                    this.user.branch = userData.bankAddress
+
             } catch (error) {
                 console.error("Error!! parsing user data:", error);
             }
@@ -145,6 +134,7 @@ export default {
         this.showMore();
         this.fetchBank();
         this.fetchAccInfo();
+        this.fetchTransactions();
     },
     computed: {
         showMoreEnabled() {
@@ -168,12 +158,12 @@ export default {
             }
         },
         async fetchBank() {
-            
+
             try {
                 await axios.get(`${this.apiUrl}/getIFSC`, {
                     params: { accountNumber: this.user.accountNum }
                 });
-                
+
             } catch (error) {
                 console.error('Error fetching addresses:', error);
             }
@@ -184,7 +174,7 @@ export default {
                 const loginresponse = await axios.get(`${this.apiUrl}/user/BalanceEnquiry`, {
                     params: { accountNumber: this.user.accountNum }
                 });
-                
+
                 this.user.bal = loginresponse.data.accountInfo.accBalance;
             } catch (error) {
                 if (error.response && error.response.status === 401) {
@@ -193,6 +183,17 @@ export default {
                 } else {
                     console.error("Error fetching account details:", error);
                 }
+            }
+        },
+        async fetchTransactions() {
+            try {
+                this.allTransactions = await axios.get(`${this.apiUrl}/getTxs`, {
+                    params: { accountNumber: this.user.accountNum }
+                });
+                console.log(this.allTransactions);
+
+            } catch (error) {
+                console.error('Error fetching Trsansactions:', error);
             }
         }
     }

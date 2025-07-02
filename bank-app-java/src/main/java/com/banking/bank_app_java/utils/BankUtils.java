@@ -1,9 +1,9 @@
 package com.banking.bank_app_java.utils;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class BankUtils {
 
@@ -27,11 +27,10 @@ public class BankUtils {
         return "MYBANK0" + branchCode;
     }
 
-    public String generateTransactionId(String ifsc) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-        String timestamp = sdf.format(new Date());
-        Random random = new Random();
-        int randomNumber = random.nextInt(100000); // Random 5-digit number
-        return ifsc + "-" + timestamp + "-" + String.format("%05d", randomNumber);
+    public String generateTransactionId() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String timestamp = LocalDateTime.now().format(formatter);
+        int randomNumber = ThreadLocalRandom.current().nextInt(0, 100_000);  // 0 to 99999
+        return "MYBANK0-" + timestamp + "-" + String.format("%05d", randomNumber);
     }
 }

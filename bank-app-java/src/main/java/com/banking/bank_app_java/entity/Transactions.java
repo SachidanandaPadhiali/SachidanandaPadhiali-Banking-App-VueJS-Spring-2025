@@ -3,7 +3,6 @@ package com.banking.bank_app_java.entity;
 import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,17 +22,17 @@ public class Transactions {
     private Long id;
     
     @Column(name = "transaction_id")
-    private BigDecimal transactionId;
+    private String transactionId;
 
     @Column(name = "transaction_type", nullable = false)
     private int transactionType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "source_acc_id", nullable = false)
+    @JoinColumn(name = "source_acc_no", referencedColumnName = "acc_no")
     private UserBank sourceAcc;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dest_acc_id", nullable = false)
+    @JoinColumn(name = "dest_acc_no", referencedColumnName = "acc_no")
     private UserBank destAcc;
 
     @Column(name = "transaction_amt", nullable = false)

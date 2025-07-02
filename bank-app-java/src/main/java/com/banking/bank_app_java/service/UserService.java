@@ -1,8 +1,7 @@
 package com.banking.bank_app_java.service;
 
 import com.banking.bank_app_java.dto.*;
-import com.banking.bank_app_java.entity.User;
-import com.banking.bank_app_java.entity.UserBank;
+import com.banking.bank_app_java.entity.*;
 import java.util.List;
 
 public interface UserService {
@@ -15,5 +14,5 @@ public interface UserService {
 	BankResponse debitAccount(CreditDebitRequest creditDebitRequest);
 	BankResponse transfer(Transfer transferRequest);
 	BankResponse checkUserDuplicate(UserRequests userRequests);
-        List<TransactionsDTO> getTransactions(String accountNumber);
+        List<Transactions> getTransactions(String accountNumber);
 }

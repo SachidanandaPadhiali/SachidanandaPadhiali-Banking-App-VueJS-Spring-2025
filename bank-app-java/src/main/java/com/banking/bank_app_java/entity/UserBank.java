@@ -32,6 +32,7 @@ public class UserBank {
     @JoinColumn(name = "ifsc") // foreign key column in Bank table
     private Banks bank;
 
+        @Column(name = "acc_no")
 	private String accNo;
 	private BigDecimal accBalance;
 	private String accStatus;

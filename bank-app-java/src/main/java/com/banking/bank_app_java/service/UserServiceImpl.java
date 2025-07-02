@@ -258,9 +258,9 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    public List<TransactionsDTO> getTransactions(String accountNumber) {
+    public List<Transactions> getTransactions(String accountNumber) {
         UserBank userBankOpt = userBankRepo.findByAccNo(accountNumber);
-        return transactionsRepo.findBySourceAcc_AccountNumberOrDestAcc_AccountNumberOrderByTransactionTimeDesc(
+        return transactionsRepo.findBySourceAcc_AccNoOrDestAcc_AccNoOrderByTransactionTimeDesc(
                 accountNumber,
                 accountNumber
         );
