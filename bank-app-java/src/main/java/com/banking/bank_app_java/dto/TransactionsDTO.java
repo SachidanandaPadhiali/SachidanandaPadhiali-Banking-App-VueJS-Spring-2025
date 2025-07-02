@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Transactions {
+public class TransactionsDTO {
     private BigDecimal transactionId;
     private int transactionType;
     

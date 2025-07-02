@@ -1,42 +1,49 @@
-import com.banking.bank_app_java.entity.UserBank;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+package com.banking.bank_app_java.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import org.hibernate.annotations.CreationTimestamp;
+
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Transaction")
-public class Transaction {
+@Table(name = "User_Transaction")
+public class Transactions {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(name = "transaction_id")
     private BigDecimal transactionId;
+
+    @Column(name = "transaction_type", nullable = false)
     private int transactionType;
-    
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "source_acc_id", nullable = false)
     private UserBank sourceAcc;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dest_acc_id", nullable = false)
     private UserBank destAcc;
-    
+
+    @Column(name = "transaction_amt", nullable = false)
     private Long transactionAmt;
+
+    @Column(name = "transaction_status", nullable = false)
     private String transactionStatus;
-    
+
     @CreationTimestamp
+    @Column(name = "transaction_time", nullable = false, updatable = false)
     private LocalDateTime transactionTime;
+
 }

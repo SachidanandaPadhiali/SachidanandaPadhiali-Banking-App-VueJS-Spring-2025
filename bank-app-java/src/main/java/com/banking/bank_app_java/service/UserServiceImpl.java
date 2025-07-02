@@ -29,6 +29,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserBankRepo mappingRepo;
 
+    @Autowired
+    private TransactionsRepo transactionsRepo;
+
     @Override
     public BankResponse createAccount(UserRequests userRequests) {
         /**
@@ -255,9 +258,11 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    @Override
-    public List<Transactions> getTransactions(Long accountNumber){
-        UserBank user = userBankRepo.findByAccNo(accountNumber.toString());
-        
+    public List<TransactionsDTO> getTransactions(String accountNumber) {
+        UserBank userBankOpt = userBankRepo.findByAccNo(accountNumber);
+        return transactionsRepo.findBySourceAcc_AccountNumberOrDestAcc_AccountNumberOrderByTransactionTimeDesc(
+                accountNumber,
+                accountNumber
+        );
     }
 }
