@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TransactionsRepo extends JpaRepository<Transactions, BigDecimal> {
 
-    List<Transactions> findBySourceAcc_AccNoOrDestAcc_AccNoOrderByTransactionTimeDesc(
+    List<Transactions> findTop30BySourceAcc_AccNoOrDestAcc_AccNoOrderByTransactionTimeDesc(
             String sourceAccountNumber,
             String destAccountNumber
     );

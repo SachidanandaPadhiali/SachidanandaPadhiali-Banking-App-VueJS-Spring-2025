@@ -46,13 +46,14 @@
             </CollapsDetails>
             <hr>
 
-            <CollapsDetails title="Statement" id="accounts">
+            <CollapsDetails title="Statement" id="accounts" v-model:expanded="isStatementExpanded">
                 <hr>
                 <ul>
                     <li v-for="(transaction, index) in displayedTransactions" :key="index">
-                        {{ transaction }}
+                        {{ transaction.transactionId }}
                     </li>
                 </ul>
+
                 <hr>
                 <div class="statement">
                     <a class="moreless" v-if="showMoreEnabled" @click="showMore">Show More Transactions<svg-icon
@@ -103,6 +104,7 @@ export default {
                 branch: ''
             },
             allTransactions: [],
+            isStatementExpanded: false,
             displayedTransactions: [],
             recordsToShow: 10,
             recordsToDedut: 20,
@@ -131,21 +133,35 @@ export default {
         } else {
             console.log("No user data found.");
         }
-        this.showMore();
+
         this.fetchBank();
         this.fetchAccInfo();
         this.fetchTransactions();
+        this.initTransactions();
     },
     computed: {
         showMoreEnabled() {
-            return this.displayedTransactions.length < 30;
+            return this.displayedTransactions.length < this.allTransactions.length && this.displayedTransactions.length < 30;
         },
         showLessEnabled() {
-            return this.displayedTransactions.length == 30;
+            return this.displayedTransactions.length == 30 || this.displayedTransactions.length >= this.allTransactions.length;
+        }
+    },
+    watch: {
+        isStatementExpanded(newVal) {
+            if (newVal) {
+                this.initTransactions();
+            }
         }
     },
     methods: {
+        async initTransactions() {
+            await this.fetchTransactions();
+            this.displayedTransactions = this.allTransactions.slice(0, this.recordsToShow); // now show first 10
+        },
+
         showMore() {
+            console.log(this.allTransactions);
             const nextRecords = this.allTransactions.slice(
                 this.displayedTransactions.length,
                 this.displayedTransactions.length + this.recordsToShow
@@ -153,9 +169,7 @@ export default {
             this.displayedTransactions.push(...nextRecords);
         },
         showLess() {
-            if (this.displayedTransactions.length >= this.maxRecordsToShow) {
-                this.displayedTransactions.splice(this.recordsToShow, this.recordsToDedut);
-            }
+            this.displayedTransactions = this.allTransactions.slice(0, 10);
         },
         async fetchBank() {
 
@@ -187,10 +201,10 @@ export default {
         },
         async fetchTransactions() {
             try {
-                this.allTransactions = await axios.get(`${this.apiUrl}/getTxs`, {
+                const response = await axios.get(`${this.apiUrl}/getTxs`, {
                     params: { accountNumber: this.user.accountNum }
                 });
-                console.log(this.allTransactions);
+                this.allTransactions = response.data;
 
             } catch (error) {
                 console.error('Error fetching Trsansactions:', error);
@@ -278,6 +292,15 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+#accounts li {
+  padding: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-bottom: 1px dashed var(--border); /* subtle separator */
+  align-items: center; /* vertically center content */
 }
 
 .moreless {
