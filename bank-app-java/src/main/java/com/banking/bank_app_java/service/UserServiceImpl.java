@@ -261,7 +261,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<TransactionsDTO> getTransactions(String accountNumber) {
-        List<Transactions> userTransactions = transactionsRepo.findBySourceAcc_AccNoOrDestAcc_AccNoOrderByTransactionTimeDesc(
+        List<Transactions> userTransactions = transactionsRepo.findTop30BySourceAcc_AccNoOrDestAcc_AccNoOrderByTransactionTimeDesc(
                 accountNumber,
                 accountNumber
         );
@@ -271,10 +271,29 @@ public class UserServiceImpl implements UserService {
 
         for (Transactions txs : userTransactions) {
 
+            String trType = "";
+            switch (txs.getTransactionType()) {
+                case 0:
+                    trType = "DEPOSIT";
+                    break;
+                case 1:
+                    if(txs.getSourceAcc().getAccNo().equals(accountNumber)) {
+                        trType = "DEBIT";
+                    }
+                    else if(txs.getDestAcc().getAccNo().equals(accountNumber)) {
+                        trType = "CREDIT";
+                    }
+                    break;
+                case 2:
+                    trType = "WITHDRAW";
+                    break;
+                default:
+                    throw new AssertionError();
+            }
             TransactionsDTO bankTransaction = TransactionsDTO.builder().transactionId(txs.getTransactionId())
                     .transactionAmt(txs.getTransactionAmt())
                     .transactionStatus(txs.getTransactionStatus())
-                    .transactionType(txs.getTransactionType())
+                    .transactionType(trType)
                     .transactionTime(txs.getTransactionTime().toString())
                     .sourceAcc(txs.getSourceAcc().getAccNo())
                     .destAcc(txs.getDestAcc().getAccNo())

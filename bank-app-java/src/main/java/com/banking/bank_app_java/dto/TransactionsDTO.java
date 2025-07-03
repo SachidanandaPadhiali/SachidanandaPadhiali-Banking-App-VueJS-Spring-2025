@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TransactionsDTO {
     private String transactionId;
-    private int transactionType;
+    private String transactionType;
     
     private String sourceAcc;
     private String destAcc;

@@ -49,8 +49,24 @@
             <CollapsDetails title="Statement" id="accounts" v-model:expanded="isStatementExpanded">
                 <hr>
                 <ul>
-                    <li v-for="(transaction, index) in displayedTransactions" :key="index">
-                        {{ transaction.transactionId }}
+                    <li v-for="(transaction, index) in displayedTransactions" :key="index" class="transaction">
+                        <div class="transactionRow">
+                            <h6>{{ transaction.transactionTime }}</h6>
+                            <div>
+                                <p v-if="transaction.transactionType == 'DEBIT'">TO {{ transaction.destAcc }}</p>
+                                <p v-if="transaction.transactionType == 'CREDIT'">FROM {{ transaction.sourceAcc }}</p>
+                            </div>
+                            <h4>{{ transaction.transactionAmt }}</h4>
+                        </div>
+                        <div class="transactionRow">
+                            <p v-if="transaction.transactionType == 'DEBIT'"><svg-icon style="color:red; height: 20px; width:20px;" type="mdi" :path="debitOut" />{{ transaction.transactionType }}</p>
+                            <p v-else-if="transaction.transactionType == 'CREDIT'"><svg-icon style="color:green; height: 20px; width:20px;" type="mdi" :path="creditIn" />{{ transaction.transactionType }}</p>
+                            <p v-else-if="transaction.transactionType == 'DEPOSIT'">🟢{{ transaction.transactionType }}</p>
+                            <p v-else-if="transaction.transactionType == 'WITHDRAW'">🔴{{ transaction.transactionType }}</p>
+                            <p>Transaction ID : {{ transaction.transactionId }}
+                            </p>
+                            <h6> {{ transaction.transactionStatus }} </h6>
+                        </div>
                     </li>
                 </ul>
 
@@ -71,7 +87,7 @@
 
 <script>
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiArrowLeftDropCircleOutline, mdiArrowDownDropCircleOutline, mdiArrowUpDropCircleOutline } from '@mdi/js';
+import { mdiArrowBottomLeft, mdiArrowTopRight, mdiArrowLeftDropCircleOutline, mdiArrowDownDropCircleOutline, mdiArrowUpDropCircleOutline } from '@mdi/js';
 import axios from 'axios';
 import CollapsDetails from './Collaps.vue';
 
@@ -84,6 +100,8 @@ export default {
             gotoprofile: mdiArrowLeftDropCircleOutline,
             less: mdiArrowUpDropCircleOutline,
             more: mdiArrowDownDropCircleOutline,
+            creditIn: mdiArrowBottomLeft,
+            debitOut: mdiArrowTopRight,
             activeIndex: 0,
             showPopup: false,
             previewUrl: null,
@@ -119,13 +137,10 @@ export default {
                 const userData = JSON.parse(storedData);
 
                 this.user.id = userData.id;
-                this.user.firstName = userData.firstName;
                 this.user.fullname = userData.firstName + " " + userData.lastName;
-                this.user.email = userData.email;
-                this.user.phoneNumber = userData.phoneNumber;
                 this.user.accountNum = userData.accNo;
-                this.user.ifsc = userData.ifsc,
-                    this.user.branch = userData.bankAddress
+                this.user.ifsc = userData.ifsc;
+                this.user.branch = userData.bankAddress
 
             } catch (error) {
                 console.error("Error!! parsing user data:", error);
@@ -161,7 +176,6 @@ export default {
         },
 
         showMore() {
-            console.log(this.allTransactions);
             const nextRecords = this.allTransactions.slice(
                 this.displayedTransactions.length,
                 this.displayedTransactions.length + this.recordsToShow
@@ -294,14 +308,22 @@ export default {
     align-items: center;
 }
 
-#accounts li {
-  padding: 5px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  border-bottom: 1px dashed var(--border); /* subtle separator */
-  align-items: center; /* vertically center content */
+.transaction {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-bottom: 1px dashed var(--border);
+    /* subtle separator */
 }
+
+.transactionRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: center;
+}
+
 
 .moreless {
     margin: 1rem 0;
@@ -337,13 +359,13 @@ export default {
     z-index: 0;
     overflow: hidden;
     width: fit-content;
-    padding: 5px;
+    padding: 5px 10px;
     color: var(--dark-text);
     text-decoration: none;
     font-weight: var(--font-normal);
     font-size: var(--normal-font-size);
     cursor: pointer;
-    border-radius: 50px;
+    border-radius: 10px;
     transition: all 0.4s ease;
 }
 
