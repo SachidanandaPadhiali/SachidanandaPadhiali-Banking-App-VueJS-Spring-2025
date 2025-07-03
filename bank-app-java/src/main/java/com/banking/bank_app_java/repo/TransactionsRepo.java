@@ -1,6 +1,5 @@
 package com.banking.bank_app_java.repo;
 
-import com.banking.bank_app_java.dto.TransactionsDTO;
 import com.banking.bank_app_java.entity.Transactions;
 
 import java.math.BigDecimal;

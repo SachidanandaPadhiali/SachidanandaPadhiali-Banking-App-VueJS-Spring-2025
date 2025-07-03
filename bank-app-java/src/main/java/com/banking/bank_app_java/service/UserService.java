@@ -14,5 +14,5 @@ public interface UserService {
 	BankResponse debitAccount(CreditDebitRequest creditDebitRequest);
 	BankResponse transfer(Transfer transferRequest);
 	BankResponse checkUserDuplicate(UserRequests userRequests);
-        List<Transactions> getTransactions(String accountNumber);
+        List<TransactionsDTO> getTransactions(String accountNumber);
 }

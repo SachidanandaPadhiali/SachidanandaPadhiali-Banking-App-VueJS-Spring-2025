@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -258,11 +259,29 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    public List<Transactions> getTransactions(String accountNumber) {
-        UserBank userBankOpt = userBankRepo.findByAccNo(accountNumber);
-        return transactionsRepo.findBySourceAcc_AccNoOrDestAcc_AccNoOrderByTransactionTimeDesc(
+    @Override
+    public List<TransactionsDTO> getTransactions(String accountNumber) {
+        List<Transactions> userTransactions = transactionsRepo.findBySourceAcc_AccNoOrDestAcc_AccNoOrderByTransactionTimeDesc(
                 accountNumber,
                 accountNumber
         );
+
+        //Convert all the transactions into transactionDTO and return the result array
+        List<TransactionsDTO> userTxs = new ArrayList<>();
+
+        for (Transactions txs : userTransactions) {
+
+            TransactionsDTO bankTransaction = TransactionsDTO.builder().transactionId(txs.getTransactionId())
+                    .transactionAmt(txs.getTransactionAmt())
+                    .transactionStatus(txs.getTransactionStatus())
+                    .transactionType(txs.getTransactionType())
+                    .transactionTime(txs.getTransactionTime().toString())
+                    .sourceAcc(txs.getSourceAcc().getAccNo())
+                    .destAcc(txs.getDestAcc().getAccNo())
+                    .build();
+            System.out.println(bankTransaction);
+            userTxs.add(bankTransaction);
+        }
+        return userTxs;
     }
 }

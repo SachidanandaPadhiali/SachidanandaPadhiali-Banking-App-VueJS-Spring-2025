@@ -1,7 +1,5 @@
 package com.banking.bank_app_java.dto;
 
-import com.banking.bank_app_java.entity.UserBank;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,8 +13,8 @@ public class TransactionsDTO {
     private String transactionId;
     private int transactionType;
     
-    private UserBank sourceAcc;
-    private UserBank destAcc;
+    private String sourceAcc;
+    private String destAcc;
     
     private Long transactionAmt;
     private String transactionStatus;

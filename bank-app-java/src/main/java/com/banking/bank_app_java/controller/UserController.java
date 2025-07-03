@@ -110,7 +110,9 @@ public class UserController {
     }
 
     @GetMapping("/getTxs")
-    public List<Transactions> getTransactions(@RequestParam("accountNumber") String accountNumber) {
-            return userService.getTransactions(accountNumber);
+    public List<TransactionsDTO> getTransactions(@RequestParam("accountNumber") String accountNumber) {
+            List<TransactionsDTO> userTxs =  userService.getTransactions(accountNumber);
+            
+            return userTxs;
     }
 }
