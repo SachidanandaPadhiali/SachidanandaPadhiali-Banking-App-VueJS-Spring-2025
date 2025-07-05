@@ -2,32 +2,37 @@
     <div class="container">
         <div class="main-body">
             <div v-if="isMobileScreen">
-                <button class="hamburger-icon" @click="toggleMenu">
-                    ☰ <!-- You can replace this with any icon of your choice -->
-                </button>
+                <svg-icon v-if="!mobileMenuOpen" class="hamburger-icon" type="mdi" :path="menuToggle" @click="toggleMobileMenu" />
                 <!-- Mobile Navigation -->
-                <div v-if="isMobileNavOpen" class="mobile-nav-overlay" @click="closeMenu">
-                    <div class="mobile-nav-content" @click.stop>
-                        <!-- Close Button to close the navigation -->
-                        <svg-icon style="float:right;" type="mdi" :path="close" @click="closeMenu" />
-
-                        <div class="d-flex flex-column align-items-center text-center">
-                            <div class="mt-3">
-                                <h4>{{ user.firstName }}</h4>
-                                <p class="text-secondary mb-1">{{ user.email }}</p>
-                                <p class="text-muted font-size-sm">{{ user.phoneNumber }}</p>
-                                <p class="text-secondary mb-1">{{ formattedDate }}</p>
+                <div class="mobile-nav-wrapper" :class="{ expanded: mobileMenuOpen }">
+                    <div class="mobile-nav-overlay" @click.self="toggleMobileMenu">
+                        <div class="mobile-nav-content">
+                            <span class="mobile-nav-close" @click="toggleMobileMenu">
+                                <svg-icon type="mdi" :path="menuclose" />
+                            </span>
+                            <div class="logo-box">
+                                <router-link to="/" class="logo">
+                                    <img src="../assets/img/logowhite.png" alt="Logo" />
+                                </router-link>
                             </div>
-                        </div>
-                        <div class="list-group list-group-flush text-center mt-4">
-                            <a href="#" @click="goToHome" class="btn mybtn">
-                                <svg-icon type="mdi" :path="home" />
-                                HomePage
-                            </a>
-                            <a href="#" @click="logout" class="btn mybtn">
-                                <svg-icon type="mdi" :path="logouticon" />
-                                Sign out
-                            </a>
+                            <div class="d-flex flex-column align-items-center text-center">
+                                <div class="mt-3">
+                                    <h4>{{ user.firstName }}</h4>
+                                    <p class="text-secondary mb-1">{{ user.email }}</p>
+                                    <p class="text-muted font-size-sm">{{ user.phoneNumber }}</p>
+                                    <p class="text-secondary mb-1">{{ formattedDate }}</p>
+                                </div>
+                            </div>
+                            <div class="list-group list-group-flush text-center mt-4">
+                                <a href="#" @click="goToHome" class="btn mybtn">
+                                    <svg-icon type="mdi" :path="home" />
+                                    HomePage
+                                </a>
+                                <a href="#" @click="logout" class="btn mybtn">
+                                    <svg-icon type="mdi" :path="logouticon" />
+                                    Sign out
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -70,15 +75,8 @@
                 </div>
 
                 <CollapsDetails title="Fixed Deposits" id="accounts">
-                    <p><strong>Account Number:</strong> 1234567890</p>
-                    <p><strong>Balance:</strong> ₹0.00</p>
-                    <p><strong>Status:</strong> Active</p>
                 </CollapsDetails>
                 <CollapsDetails title="Recurring Deposits" id="accounts">
-                    <ul>
-                        <li>🟢 Credited ₹5000 on 01-Jun</li>
-                        <li>🔴 Debited ₹1200 on 03-Jun</li>
-                    </ul>
                 </CollapsDetails>
 
             </div>
@@ -205,7 +203,7 @@
 
 <script>
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiEyeCircle, mdiCloseCircle, mdiArrowRightDropCircle, mdiAccount, mdiArrowDownDropCircle, mdiBook, mdiLogout, mdiHome, mdiWallet } from '@mdi/js';
+import { mdiMenu, mdiEyeCircle, mdiCloseCircle, mdiArrowRightDropCircle, mdiAccount, mdiArrowDownDropCircle, mdiBook, mdiLogout, mdiHome, mdiWallet } from '@mdi/js';
 import axios from 'axios';
 import UserAvatarDisplay from './UserAvatarDisplay.vue';
 import CollapsDetails from './Collaps.vue';
@@ -217,7 +215,10 @@ export default {
         return {
             windowWidth: window.innerWidth,
             isMobileNavOpen: false,
+            mobileMenuOpen: false,
             apiUrl: `${process.env.VUE_APP_API_URL}/api`,
+            menuToggle: mdiMenu,
+            menuclose: mdiCloseCircle,
             eye: mdiEyeCircle,
             gotosavings: mdiArrowRightDropCircle,
             cir: mdiArrowDownDropCircle,
@@ -304,12 +305,15 @@ export default {
         handleResize() {
             this.windowWidth = window.innerWidth;
         },
-        toggleMenu() {
-            this.isMobileNavOpen = !this.isMobileNavOpen;
+        toggleMobileMenu() {
+            this.mobileMenuOpen = !this.mobileMenuOpen;
         },
-        // Close the mobile navigation
-        closeMenu() {
-            this.isMobileNavOpen = false;
+        toggleSubmenu(key) {
+            // Toggle only the requested submenu; collapse others:
+            this.submenuOpen[key] = !this.submenuOpen[key];
+            Object.keys(this.submenuOpen).forEach(k => {
+                if (k !== key) this.submenuOpen[k] = false;
+            });
         },
         onImageSelected(event) {
             const file = event.target.files[0];
@@ -425,23 +429,62 @@ export default {
     top: 20px;
     left: 20px;
     z-index: 1001;
-    /* Make sure it's on top of other content */
 }
 
+.mobile-nav-close {
+    display: inline-block;
+    font-size: 24px;
+    cursor: pointer;
+    text-align: right;
+    width: 100%;
+}
+
+
 /* Full screen overlay when the mobile menu is open */
-.mobile-nav-overlay {
+.mobile-nav-wrapper {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    /* Overlay background */
-    display: flex;
-    justify-content: flex-end;
-    /* Align the navigation to the right */
+    width: 100vw;
+    height: 100vh;
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition: transform 0.5s ease, visibility 0.5s ease;
+    z-index: 999;
+}
+
+.mobile-nav-wrapper.expanded {
+    visibility: visible;
+    transform: translateX(0);
+}
+
+.mobile-nav-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.mobile-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
     z-index: 1000;
-    /* Ensure it's on top */
+}
+
+.mobile-drawer-content {
+    background: var(--bg-dark);
+    width: 50%;
+    max-width: 300px;
+    height: 100%;
+    padding: 1rem;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
 }
 
 .mobile-nav-content {

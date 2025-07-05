@@ -18,30 +18,26 @@
 
             <CollapsDetails title="Show Account Details" id="accounts">
                 <hr>
-                <div class="feature-comparison">
-                    <div class="comparison-table">
-                        <table class="table table-hover mb-0">
-                            <tbody>
-                                <tr>
-                                    <td><strong>Account Holder</strong></td>
-                                    <td>{{ user.fullname }}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Branch IFSC</strong></td>
-                                    <td>{{ user.ifsc }}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Branch</strong></td>
-                                    <td>{{ user.branch }}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Status</strong></td>
-                                    <td>{{ user.accStatus }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <table class="table table-hover mb-0">
+                    <tbody>
+                        <tr>
+                            <td><strong>Account Holder</strong></td>
+                            <td>{{ user.fullname }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Branch IFSC</strong></td>
+                            <td>{{ user.ifsc }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Branch</strong></td>
+                            <td>{{ user.branch }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Status</strong></td>
+                            <td>{{ user.accStatus }}</td>
+                        </tr>
+                    </tbody>
+                </table>
 
             </CollapsDetails>
             <hr>
@@ -50,23 +46,39 @@
                 <hr>
                 <ul>
                     <li v-for="(transaction, index) in displayedTransactions" :key="index" class="transaction">
-                        <div class="transactionRow">
-                            <h6>{{ transaction.transactionTime }}</h6>
-                            <div>
-                                <p v-if="transaction.transactionType == 'DEBIT'">TO {{ transaction.destAcc }}</p>
-                                <p v-if="transaction.transactionType == 'CREDIT'">FROM {{ transaction.sourceAcc }}</p>
-                            </div>
-                            <h4>{{ transaction.transactionAmt }}</h4>
-                        </div>
-                        <div class="transactionRow">
-                            <p v-if="transaction.transactionType == 'DEBIT'"><svg-icon style="color:red; height: 20px; width:20px;" type="mdi" :path="debitOut" />{{ transaction.transactionType }}</p>
-                            <p v-else-if="transaction.transactionType == 'CREDIT'"><svg-icon style="color:green; height: 20px; width:20px;" type="mdi" :path="creditIn" />{{ transaction.transactionType }}</p>
-                            <p v-else-if="transaction.transactionType == 'DEPOSIT'">🟢{{ transaction.transactionType }}</p>
-                            <p v-else-if="transaction.transactionType == 'WITHDRAW'">🔴{{ transaction.transactionType }}</p>
-                            <p>Transaction ID : {{ transaction.transactionId }}
-                            </p>
-                            <h6> {{ transaction.transactionStatus }} </h6>
-                        </div>
+                        <table class="transactionTable">
+                            <tbody>
+                                <tr>
+                                    <td class="txDate">{{ formattedDate(transaction.transactionTime) }}</td>
+
+                                    <!--                                    <td class="txFromTo" v-if="transaction.transactionType == 'DEBIT'">TO {{
+                                        transaction.destAcc }}</td>
+                                    <td class="txFromTo" v-else-if="transaction.transactionType == 'CREDIT'">FROM {{
+                                        transaction.sourceAcc }} </td>
+                                    <td class="txFromTo" v-else></td>-->
+
+                                    <td class="td-right txAmt" colspan="2">{{ transaction.transactionAmt }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="stack-td" v-if="transaction.transactionType == 'DEBIT'">
+                                        <svg-icon style="color:red; height: 20px; width:20px;" type="mdi"
+                                            :path="debitOut" />{{ transaction.transactionType }}
+                                    </td>
+                                    <td class="stack-td" v-else-if="transaction.transactionType == 'CREDIT'">
+                                        <svg-icon style="color:green; height: 20px; width:20px;" type="mdi"
+                                            :path="creditIn" />{{ transaction.transactionType }}
+                                    </td>
+                                    <td class="stack-td" v-else-if="transaction.transactionType == 'DEPOSIT'">🟢{{
+                                        transaction.transactionType }}</td>
+                                    <td class="stack-td" v-else-if="transaction.transactionType == 'WITHDRAW'">🔴{{
+                                        transaction.transactionType }}</td>
+
+                                    <td class="stack-td">TXN ID : {{ transaction.transactionId }} </td>
+
+                                    <td class="td-right"> {{ transaction.transactionStatus }} </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </li>
                 </ul>
 
@@ -96,6 +108,7 @@ export default {
     components: { SvgIcon, CollapsDetails },
     data() {
         return {
+            windowWidth: window.innerWidth,
             apiUrl: `${process.env.VUE_APP_API_URL}/api`,
             gotoprofile: mdiArrowLeftDropCircleOutline,
             less: mdiArrowUpDropCircleOutline,
@@ -155,6 +168,9 @@ export default {
         this.initTransactions();
     },
     computed: {
+        isMobileScreen() {
+            return this.windowWidth <= 768; // Mobile screens typically have widths of 768px or less
+        },
         showMoreEnabled() {
             return this.displayedTransactions.length < this.allTransactions.length && this.displayedTransactions.length < 30;
         },
@@ -223,6 +239,19 @@ export default {
             } catch (error) {
                 console.error('Error fetching Trsansactions:', error);
             }
+        },
+        formattedDate(trDate) {
+            if (!trDate) return '';
+
+            const logInTime = new Date(trDate);
+            return logInTime.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true, // Optional: 12-hour format
+            });
         }
     }
 };
@@ -281,7 +310,6 @@ export default {
     margin-top: 2%;
 }
 
-
 .table {
     width: 100%;
     border-collapse: collapse;
@@ -293,12 +321,28 @@ export default {
     border: none;
 }
 
-.table tr {
-    transition: all .3s ease;
+.transactionTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--normal-font-size);
 }
 
-.table tr:last-child td {
-    border-bottom: none;
+.transactionTable td {
+    padding: 0 0.5rem;
+    border: none;
+}
+
+.txDate {
+    font-weight: var(--font-semi-bold);
+}
+
+.txAmt {
+    font-weight: var(--font-semi-bold);
+    font-size: var(--h1-font-size);
+}
+
+.td-right {
+    text-align: right;
 }
 
 .statement {
@@ -309,21 +353,11 @@ export default {
 }
 
 .transaction {
+    list-style: none;
     padding: 5px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
     border-bottom: 1px dashed var(--border);
     /* subtle separator */
 }
-
-.transactionRow {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    text-align: center;
-}
-
 
 .moreless {
     margin: 1rem 0;
@@ -381,5 +415,27 @@ export default {
     max-width: 1200px;
     width: 100%;
     margin: 70px auto;
+}
+
+@media (max-width: 768px) {
+    .table td {
+        padding: 0.2rem 0.2rem;
+        border: none;
+    }
+
+    .stack-td {
+        display: block;
+        width: 90%;
+    }
+
+    .transactionTable {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--small-font-size);
+    }
+
+    .txAmt {
+        font-size: var(--h2-font-size);
+    }
 }
 </style>

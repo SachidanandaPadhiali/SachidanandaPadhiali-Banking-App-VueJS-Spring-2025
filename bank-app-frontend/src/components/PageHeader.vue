@@ -600,7 +600,6 @@ export default {
     overflow-y: auto;
 }
 
-/*====== Mobile drawer: close button ======*/
 .mobile-nav-close {
     display: inline-block;
     font-size: 24px;
