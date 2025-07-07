@@ -1,12 +1,13 @@
 <template>
-    <h1>HOME PAGE</h1>
-    <router-link :to="{ path: '/User/Profile' }"><svg-icon type="mdi" :path="accdetail" /> My
-                        Profile</router-link>
+    <UserNav/>
 </template>
 
 <script>
+import UserNav from './UserNav.vue';
+
     export default{
-        name: 'UserHomePage'
+        name: 'UserHomePage',
+        components: {UserNav}
     }
 </script>
 

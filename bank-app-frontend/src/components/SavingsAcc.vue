@@ -86,7 +86,6 @@
                         </template>
                     </tbody>
                 </table>
-                    <hr />
                 <div class="statement">
                     <a class="moreless" v-if="showMoreEnabled" @click="showMore">Show More Transactions<svg-icon
                             style="color:var(--dark-text); height: 20px; width:20px;" type="mdi" :path="more" /></a>

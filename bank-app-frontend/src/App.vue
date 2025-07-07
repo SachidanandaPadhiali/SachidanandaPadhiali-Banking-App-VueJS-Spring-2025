@@ -79,6 +79,24 @@ export default {
   --transition-medium: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dark-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, var(--primary), var(--accent));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, var(--primary-dark), var(--accent));
+}
+
 .btn {
   position: relative;
   z-index: 0;
