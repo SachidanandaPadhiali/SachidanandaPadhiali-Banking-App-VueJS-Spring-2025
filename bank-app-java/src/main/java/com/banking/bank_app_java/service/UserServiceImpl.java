@@ -3,7 +3,7 @@ package com.banking.bank_app_java.service;
 import com.banking.bank_app_java.dto.*;
 import com.banking.bank_app_java.entity.*;
 import com.banking.bank_app_java.repo.*;
-import com.banking.bank_app_java.utils.AccountUtils;
+import com.banking.bank_app_java.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -92,6 +92,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
     public User validateUser(String username, String password) {
         User user = userRepo.findByEmail(username);
         if (user != null) {
@@ -101,6 +102,7 @@ public class UserServiceImpl implements UserService {
         return (user != null && user.getPassword().equals(password)) ? user : null;
     }
 
+    @Override
     public UserBank getAccDetails(Long id) {
         return userBankRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -150,6 +152,17 @@ public class UserServiceImpl implements UserService {
         User userToCredit = userRepo.findById(userBank.getUser().getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         userBank.setAccBalance(userBank.getAccBalance().add(crRequest.getAmount()));
+        
+        Transactions newTransaction = new Transactions();
+        newTransaction.setTransactionId(BankUtils.generateTransactionId());
+        newTransaction.setSourceAcc(userBank);
+        newTransaction.setDestAcc(userBank);
+        newTransaction.setTransactionAmt(crRequest.getAmount());
+        newTransaction.setTransactionTime(LocalDateTime.now());
+        newTransaction.setTransactionType(0);
+        newTransaction.setTransactionStatus("COMPLETED");
+        
+        transactionsRepo.save(newTransaction);
         userBankRepo.save(userBank);
         userRepo.save(userToCredit);
         /**
@@ -187,6 +200,17 @@ public class UserServiceImpl implements UserService {
         }
 
         userBank.setAccBalance(userBank.getAccBalance().subtract(drRequest.getAmount()));
+        
+        Transactions newTransaction = new Transactions();
+        newTransaction.setTransactionId(BankUtils.generateTransactionId());
+        newTransaction.setSourceAcc(userBank);
+        newTransaction.setDestAcc(userBank);
+        newTransaction.setTransactionAmt(drRequest.getAmount());
+        newTransaction.setTransactionTime(LocalDateTime.now());
+        newTransaction.setTransactionType(2);
+        newTransaction.setTransactionStatus("COMPLETED");
+        
+        transactionsRepo.save(newTransaction);
         userBankRepo.save(userBank);
         userRepo.save(userToDebit);
         /**
@@ -227,6 +251,17 @@ public class UserServiceImpl implements UserService {
                     .accountInfo(AccountInfo.builder().accBalance(userFromBank.getAccBalance()).build()).build();
         }
         userFromBank.setAccBalance(userFromBank.getAccBalance().subtract(transferRequest.getAmount()));
+        
+        Transactions newTransaction = new Transactions();
+        newTransaction.setTransactionId(BankUtils.generateTransactionId());
+        newTransaction.setSourceAcc(userFromBank);
+        newTransaction.setDestAcc(userToBank);
+        newTransaction.setTransactionAmt(transferRequest.getAmount());
+        newTransaction.setTransactionTime(LocalDateTime.now());
+        newTransaction.setTransactionType(1);
+        newTransaction.setTransactionStatus("COMPLETED");
+        
+        transactionsRepo.save(newTransaction);
         userBankRepo.save(userFromBank);
         userRepo.save(userFromTransfer);
         /**

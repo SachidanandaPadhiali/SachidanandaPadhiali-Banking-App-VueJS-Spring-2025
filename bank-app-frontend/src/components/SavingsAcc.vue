@@ -43,19 +43,16 @@
             <hr>
 
             <CollapsDetails title="Statement" id="accounts" v-model:expanded="isStatementExpanded">
-                <hr>
                 <table class="transactionTable">
                     <tbody>
                         <template v-for="(transaction, index) in displayedTransactions" :key="index">
-                            <hr style="width: 100%;">
-
                             <!-- ROW 1 -->
-                            <tr>
+                            <tr class="transactionMeta">
                                 <td class="txDate">{{ formattedDate(transaction.transactionTime) }}</td>
 
-                                <td class="txFromTo">
+                                <td class="txFromTo" style="text-align: left;">
                                     <span v-if="transaction.transactionType === 'DEBIT'">TO {{ transaction.destAcc
-                                        }}</span>
+                                    }}</span>
                                     <span v-else-if="transaction.transactionType === 'CREDIT'">FROM {{
                                         transaction.sourceAcc }}</span>
                                     <span v-else>&nbsp;</span>
@@ -89,6 +86,7 @@
                         </template>
                     </tbody>
                 </table>
+                    <hr />
                 <div class="statement">
                     <a class="moreless" v-if="showMoreEnabled" @click="showMore">Show More Transactions<svg-icon
                             style="color:var(--dark-text); height: 20px; width:20px;" type="mdi" :path="more" /></a>
@@ -304,6 +302,10 @@ export default {
     margin: 70px auto;
 }
 
+.table td {
+    border: none;
+}
+
 .savnavdetails {
     padding-left: 5%;
 }
@@ -327,12 +329,19 @@ export default {
 
 .transactionRow {
     display: flex;
-    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    flex-wrap: nowrap;
     justify-content: space-between;
 }
 
 .txDate {
     font-weight: var(--font-semi-bold);
+    width: 35%;
+}
+
+.txfromTo {
+    width: 45%;
 }
 
 .txAmt {
@@ -352,6 +361,8 @@ export default {
     align-items: center;
     flex-wrap: nowrap;
     gap: 0.5rem;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border);
 }
 
 .txn-id {

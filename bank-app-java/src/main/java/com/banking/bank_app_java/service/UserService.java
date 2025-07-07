@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface UserService {
 	BankResponse createAccount(UserRequests userRequest);
+	BankResponse checkUserDuplicate(UserRequests userRequests);
 	User validateUser(String username, String password);
 	UserBank getAccDetails(Long id);
 	BankResponse balanceEnquiry(EnquiryRequest enquiryRequest);
@@ -13,6 +14,5 @@ public interface UserService {
 	BankResponse creditAccount(CreditDebitRequest creditDebitRequest);
 	BankResponse debitAccount(CreditDebitRequest creditDebitRequest);
 	BankResponse transfer(Transfer transferRequest);
-	BankResponse checkUserDuplicate(UserRequests userRequests);
         List<TransactionsDTO> getTransactions(String accountNumber);
 }

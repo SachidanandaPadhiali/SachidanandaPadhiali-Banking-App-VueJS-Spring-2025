@@ -40,7 +40,7 @@ export default {
 
 <style>
 .collapsible-container {
-    margin: 20px auto;
+    margin: var(--mb-2) auto;
     background-color: #fff;
 }
 
@@ -48,7 +48,7 @@ export default {
     display: flex;
     justify-content: space-between;
     cursor: pointer;
-    margin: 20px auto;
+    margin: var(--mb-2) auto;
     font-weight: var(--font-semi-bold);
     font-size: var(--normal-font-size);
     color: var(--dark-text);

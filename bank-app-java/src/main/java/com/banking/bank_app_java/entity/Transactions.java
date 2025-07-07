@@ -3,6 +3,7 @@ package com.banking.bank_app_java.entity;
 import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +37,7 @@ public class Transactions {
     private UserBank destAcc;
 
     @Column(name = "transaction_amt", nullable = false)
-    private Long transactionAmt;
+    private BigDecimal transactionAmt;
 
     @Column(name = "transaction_status", nullable = false)
     private String transactionStatus;

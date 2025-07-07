@@ -27,7 +27,7 @@ public class BankUtils {
         return "MYBANK0" + branchCode;
     }
 
-    public String generateTransactionId() {
+    public static String generateTransactionId() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         String timestamp = LocalDateTime.now().format(formatter);
         int randomNumber = ThreadLocalRandom.current().nextInt(0, 100_000);  // 0 to 99999

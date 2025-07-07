@@ -1,5 +1,6 @@
 package com.banking.bank_app_java.dto;
 
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,7 @@ public class TransactionsDTO {
     private String sourceAcc;
     private String destAcc;
     
-    private Long transactionAmt;
+    private BigDecimal transactionAmt;
     private String transactionStatus;
     
     private String transactionTime;
