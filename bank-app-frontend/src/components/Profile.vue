@@ -2,7 +2,8 @@
     <div class="container">
         <div class="main-body">
             <div v-if="isMobileScreen">
-                <svg-icon v-if="!mobileMenuOpen" class="hamburger-icon" type="mdi" :path="menuToggle" @click="toggleMobileMenu" />
+                <svg-icon v-if="!mobileMenuOpen" class="hamburger-icon" type="mdi" :path="menuToggle"
+                    @click="toggleMobileMenu" />
                 <!-- Mobile Navigation -->
                 <div class="mobile-nav-wrapper" :class="{ expanded: mobileMenuOpen }">
                     <div class="mobile-nav-overlay" @click.self="toggleMobileMenu">
@@ -12,7 +13,8 @@
                             </span>
                             <div class="logo-box">
                                 <router-link to="/" class="logo">
-                                    <img src="../assets/img/logowhite.png" alt="Logo" />
+                                    <img style="height: 50px; padding:0px; margin: 0px;"
+                                        src="../assets/img/logoblack.png" alt="Logo" />
                                 </router-link>
                             </div>
                             <div class="d-flex flex-column align-items-center text-center">
@@ -439,7 +441,6 @@ export default {
     width: 100%;
 }
 
-
 /* Full screen overlay when the mobile menu is open */
 .mobile-nav-wrapper {
     position: fixed;
@@ -467,37 +468,19 @@ export default {
     background-color: rgba(0, 0, 0, 0.7);
 }
 
-.mobile-drawer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 1000;
-}
-
-.mobile-drawer-content {
-    background: var(--bg-dark);
-    width: 50%;
-    max-width: 300px;
-    height: 100%;
-    padding: 1rem;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-    overflow-y: auto;
-}
-
 .mobile-nav-content {
     background-color: #fff;
     width: 80%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 5vh;
     transform: translateX(100%);
     transition: transform 0.3s ease-in-out;
     /* Smooth sliding effect */
     padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    padding-bottom: 20%;
 }
 
 .mobile-nav-overlay .mobile-nav-content {

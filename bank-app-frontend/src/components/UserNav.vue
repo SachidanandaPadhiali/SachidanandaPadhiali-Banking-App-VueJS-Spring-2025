@@ -1,119 +1,130 @@
 <template>
-    <div class="navContainer">
-        <img class="navlogo" src="../assets/img/applogo.png">
-        <div class="navbar">
+    <header class="navContainer">
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobile-menu-button" :class="{ active: mobileMenuOpen }" @click="toggleMobileMenu">
+            <span id="line1" class="line"></span>
+            <span id="line2" class="line"></span>
+            <span id="line3" class="line"></span>
+        </button>
+        <!-- Logo -->
+        <div class="navlogo">
+            <img src="../assets/img/applogo.png" alt="App Logo" />
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="navbar">
             <a href="#home" class="nav-link">Home</a>
             <a href="#about" class="nav-link">About</a>
             <a href="#services" class="nav-link">Services</a>
             <a href="#portfolio" class="nav-link">Portfolio</a>
             <a href="#contact" class="nav-link">Contact</a>
-        </div>
+        </nav>
+
+        <!-- Profile Button (shared between desktop and mobile) -->
         <router-link :to="{ path: '/User/Profile' }" class="probutton button--animated">
             <span class="button__text">My Profile</span>
-            <span class="button__icon"><svg-icon type="mdi" :path="accdetail" class="icon" /></span>
+            <span class="button__icon">
+                <svg-icon type="mdi" :path="accdetail" class="icon" />
+            </span>
         </router-link>
+    </header>
+
+    <!-- Mobile Navigation Menu -->
+    <div class="user-nav-wrapper" :class="{ expanded: mobileMenuOpen }">
+        <div class="user-nav-overlay" @click.self="toggleMobileMenu">
+            <div class="user-nav-content">
+                <ul>
+                    <li><a href="#home" @click="closeMenu">Home</a></li>
+                    <li><a href="#about" @click="closeMenu">About</a></li>
+                    <li><a href="#services" @click="closeMenu">Services</a></li>
+                    <li><a href="#portfolio" @click="closeMenu">Portfolio</a></li>
+                    <li><a href="#contact" @click="closeMenu">Contact</a></li>
+                    <li>
+                        <router-link :to="{ path: '/User/Profile' }" class="mobile-profile-link" @click="closeMenu">
+                            My Profile
+                        </router-link>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiAccount } from '@mdi/js';
+import { mdiAccountCircleOutline } from '@mdi/js';
 
 export default {
     name: 'UserNav',
-
-    data() {
-        return {
-            mobileMenuOpen: false,
-            accdetail: mdiAccount
-        };
-    },
-
     components: { SvgIcon },
-
-    mounted() {
-        const mobileMenuBtn = document.getElementById('mobile-menu-button');
-        if (mobileMenuBtn) {
-            mobileMenuBtn.addEventListener('click', this.toggleMobileMenu);
-        }
+    data() {
+        return { mobileMenuOpen: false, accdetail: mdiAccountCircleOutline };
     },
-
     methods: {
-        toggleMobileMenu() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-
-            if (!mobileMenu || !mobileMenuButton) return;
-
-            mobileMenuButton.classList.toggle('active');
-
-            if (mobileMenu.classList.contains('open')) {
-                mobileMenu.style.height = '0';
-                mobileMenu.classList.remove('open');
-            } else {
-                mobileMenu.classList.add('open');
-                mobileMenu.style.height = `${mobileMenu.scrollHeight}px`;
-            }
-
-            this.mobileMenuOpen = mobileMenu.classList.contains('open');
-        }
+        toggleMobileMenu() { this.mobileMenuOpen = !this.mobileMenuOpen; },
+        closeMenu() { this.mobileMenuOpen = false; }
     }
 }
 </script>
 
 <style>
 .navContainer {
-    top: 0;
-    left: 0;
-    width: 100%;
-    max-width: 1280px;
     height: 60px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     padding: 10px;
     border-bottom: 1px solid rgba(6, 182, 212, 0.3);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    opacity: 0.85;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--dark-bg);
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, var(--primary), var(--accent));
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(to bottom, var(--primary), var(--accent));
-}
 
 /* Navigation Bar Styles */
 .navbar {
-    position: relative;
-    top: 0;
     z-index: 50;
     transition: all 0.3s ease;
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    width: calc(70%);
+    align-items: center;
+    gap: 20px;
 }
 
 .navbar a {
     color: var(--primary);
+    text-decoration: none;
+    font-size: var(--h3-font-size);
+    font-weight: var(--font-semi-bold);
 }
 
-/* Navbar Logo */
-.navlogo {
-    padding-top: 5px;
+
+/*Logo*/
+.navlogo a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    gap: 1px;
+    /* Adds space between image and text */
+}
+
+.navlogo img {
     height: 40px;
-    width: auto;
+}
+
+@media (max-width: 600px) {
+    .navlogo {
+        width: 70%;
+    }
+
+    .navlogo img {
+        max-height: 70%;
+    }
 }
 
 /* Navigation Links */
@@ -143,7 +154,6 @@ export default {
     text-shadow: 0 0 8px rgba(6, 182, 212, 0.3);
 }
 
-
 .probutton {
     padding: 5px 24px;
     font-size: 16px;
@@ -155,8 +165,8 @@ export default {
 }
 
 .button--animated {
-    background-color: var(--primary-color);
-    color: var(--primary);
+    background-color: var(--primary);
+    color: var(--white-text);
     overflow: hidden;
     position: relative;
 }
@@ -181,16 +191,17 @@ export default {
 }
 
 /* Mobile Navigation */
-#mobile-menu {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease;
-    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+@media (min-width: 768px) {
 
-#mobile-menu.open {
-    max-height: 300px;
-    /* Adjust based on your menu height */
+    #mobile-menu-button,
+    #mobile-menu {
+        display: none;
+    }
+
+    .navbar {
+        display: flex;
+        gap: 1.5rem;
+    }
 }
 
 #mobile-menu-button {
@@ -200,10 +211,20 @@ export default {
     cursor: pointer;
 }
 
-/* For the hamburger animation */
-#mobile-menu-button.active #line1 {
-    transform: translate(-50%, -50%) rotate(45deg);
+/* Hamburger Lines */
+.line {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px auto;
+    background-color: black;
+    transition: transform 0.3s ease, opacity 0.2s ease, background-color 0.3s ease;
     transform-origin: center;
+}
+
+/* Hamburger Animation - Active State */
+#mobile-menu-button.active #line1 {
+    transform: rotate(45deg) translate(5px, 5px);
 }
 
 #mobile-menu-button.active #line2 {
@@ -211,109 +232,99 @@ export default {
 }
 
 #mobile-menu-button.active #line3 {
-    transform: translate(-50%, -50%) rotate(-45deg);
-    transform-origin: center;
+    transform: rotate(-45deg) translate(6px, -6px);
 }
 
-#line1,
-#line2,
-#line3 {
-    transition: transform 0.3s ease, opacity 0.2s ease, background-color 0.3s ease;
-    transform-origin: center;
+/* Full screen wrapper */
+.user-nav-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    visibility: hidden;
+    z-index: 999;
+    transition: visibility 0s linear 0.7s; /* Delay hiding after transition */
+    pointer-events: none;
+    opacity: 0;
 }
 
-/* Gradient Text */
-.gradient-text {
-    background: linear-gradient(to right,
-            var(--primary),
-            var(--hover),
-            var(--accent));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+/* Wrapper handles visibility and base transitions */
+.user-nav-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 999;
 }
 
-/* Glow Effects */
-.glow-effect {
-    position: relative;
+/* When menu is open */
+.user-nav-wrapper.expanded {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 
-.glow-effect:before {
-    content: "";
+/* Overlay (fades in/out) */
+.user-nav-overlay {
     position: absolute;
-    inset: -5px;
-    background: linear-gradient(to right, var(--primary), var(--accent));
-    border-radius: inherit;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
     opacity: 0;
     transition: opacity 0.3s ease;
-    z-index: -1;
-    filter: blur(8px);
 }
 
-.glow-effect:hover:before {
+/* Overlay fades in with wrapper */
+.user-nav-wrapper.expanded .user-nav-overlay {
     opacity: 1;
 }
 
-/* Animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* Menu content (slides in from right, then out on close) */
+.user-nav-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80%;
+    height: 100%;
+    background-color: #fff;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 5vh;
+    padding: 20px;
+    padding-bottom: 20%;
 }
 
-.animate-fadeIn {
-    animation: fadeIn 0.8s ease forwards;
+/* Slide in when expanded */
+.user-nav-wrapper.expanded .user-nav-content {
+    transform: translateX(0);
+    transition-delay: 0.2s; /* Slides in after overlay fades in */
 }
 
-@keyframes pulse {
-    0% {
-        opacity: 0;
-    }
-
-    50% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
-    }
-}
-
-.animate-pulse {
-    animation: pulse 2s infinite;
-}
-
-/* Responsive Layout */
-@media (min-width: 640px) {
-    .sm\:grid-cols-2 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 768px) {
-    .md\:grid-cols-2 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .md\:grid-cols-3 {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    /* Show desktop nav, hide mobile nav */
-    .mobile-only {
-        display: none;
-    }
+/* Slide out before overlay fades out */
+.user-nav-wrapper:not(.expanded) .user-nav-content {
+    transform: translateX(100%);
+    transition-delay: 0s;
 }
 
 @media (max-width: 767px) {
-    .desktop-only {
+    .navbar {
         display: none;
+    }
+
+    #mobile-menu-button {
+        display: block;
+    }
+
+    #mobile-menu {
+        display: block;
     }
 
     section {
@@ -333,26 +344,4 @@ export default {
     }
 }
 
-/* Dark Overlay for Modals */
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-}
-
-.overlay.active {
-    opacity: 1;
-    pointer-events: auto;
-}
 </style>
