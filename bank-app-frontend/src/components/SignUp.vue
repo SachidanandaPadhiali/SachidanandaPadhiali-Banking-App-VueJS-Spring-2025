@@ -2,7 +2,7 @@
     <div>
         <img class="SignUplogo" alt="Restaurant logo" src="../assets/img/applogo.png">
     </div>
-    <div class="overlay">
+    <div class="sign-in-overlay">
         <div class="popup-container">
             <main>
                 <div class="form-container">

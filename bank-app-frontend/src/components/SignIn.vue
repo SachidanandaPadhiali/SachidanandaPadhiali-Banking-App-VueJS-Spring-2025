@@ -2,7 +2,7 @@
     <div>
         <img class="SignUplogo" alt="Restaurant logo" src="../assets/img/applogo.png">
     </div>
-    <div class="overlay">
+    <div class="sign-in-overlay">
         <div class="popup-container">
             <main>
                 <div class="form-container">
@@ -128,7 +128,7 @@ export default {
     width: 200px;
 }
 
-.overlay {
+.sign-in-overlay {
     inset: 0;
     display: flex;
     align-items: center;
@@ -301,7 +301,7 @@ input:focus {
         padding: 1.5rem;
     }
 
-    .overlay {
+    .sign-in-overlay {
         margin: 0;
     }
 }
