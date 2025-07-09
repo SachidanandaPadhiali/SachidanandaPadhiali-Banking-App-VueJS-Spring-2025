@@ -14,10 +14,10 @@
 
         <!-- Desktop Navigation -->
         <nav class="navbar">
-            <a href="#home" class="nav-link">Home</a>
-            <a href="#about" class="nav-link">About</a>
-            <a href="#services" class="nav-link">Services</a>
-            <a href="#portfolio" class="nav-link">Portfolio</a>
+            <router-link :to="{ path: '/User/Home' }" class="nav-link">Home</router-link>
+            <a href="#about" class="nav-link">Deposits</a>
+            <a href="#services" class="nav-link">Cards</a>
+            <a href="#portfolio" class="nav-link">Borrow</a>
             <a href="#contact" class="nav-link">Contact</a>
         </nav>
 
@@ -34,18 +34,24 @@
     <div class="user-nav-wrapper" :class="{ expanded: mobileMenuOpen }">
         <div class="user-nav-overlay" @click.self="toggleMobileMenu">
             <div class="user-nav-content">
-                <ul>
-                    <li><a href="#home" @click="closeMenu">Home</a></li>
-                    <li><a href="#about" @click="closeMenu">About</a></li>
-                    <li><a href="#services" @click="closeMenu">Services</a></li>
-                    <li><a href="#portfolio" @click="closeMenu">Portfolio</a></li>
-                    <li><a href="#contact" @click="closeMenu">Contact</a></li>
+                <div class="logo-box">
+                    <router-link :to="{ path: '/User/Home' }" class="logo">
+                        <img style="height: 50px; padding:0px; margin: 0px;" src="../assets/img/logoblack.png"
+                            alt="Logo" />
+                    </router-link>
+                </div>
+                <ul id="menu">
                     <li>
-                        <router-link :to="{ path: '/User/Profile' }" class="mobile-profile-link" @click="closeMenu">
-                            My Profile
-                        </router-link>
+                        <h5>Welcome {{ firstName }}</h5>
                     </li>
+                    <li><a href="#home" @click="closeMenu">Home</a></li>
+                    <li><a href="#about" @click="closeMenu">Deposits</a></li>
+                    <li><a href="#services" @click="closeMenu">Cards</a></li>
+                    <li><a href="#portfolio" @click="closeMenu">Borrow</a></li>
+                    <li><a href="#contact" @click="closeMenu">Contact</a></li>
                 </ul>
+                <router-link :to="{ path: '/' }" style="color: var(--primary);">Sign Out<svg-icon type="mdi"
+                        :path="logouticon" /></router-link>
             </div>
         </div>
     </div>
@@ -53,17 +59,34 @@
 
 <script>
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiAccountCircleOutline } from '@mdi/js';
+import { mdiAccountCircleOutline, mdiLogout } from '@mdi/js';
 
 export default {
     name: 'UserNav',
     components: { SvgIcon },
     data() {
-        return { mobileMenuOpen: false, accdetail: mdiAccountCircleOutline };
+        return { mobileMenuOpen: false, accdetail: mdiAccountCircleOutline, logouticon: mdiLogout, firstName: '' };
+    },
+    mounted() {
+        const storedData = localStorage.getItem("user-login-info");
+        if (storedData) {
+            try {
+                const userData = JSON.parse(storedData);
+                this.firstName = userData.firstName;
+            } catch (error) {
+                console.error("Error!! parsing user data:", error);
+            }
+        } else {
+            console.log("No user data found.");
+        }
     },
     methods: {
         toggleMobileMenu() { this.mobileMenuOpen = !this.mobileMenuOpen; },
-        closeMenu() { this.mobileMenuOpen = false; }
+        closeMenu() { this.mobileMenuOpen = false; },
+        logout() {
+            localStorage.removeItem("user-login-info");
+            this.$router.push("/");
+        }
     }
 }
 </script>
@@ -77,7 +100,6 @@ export default {
     align-items: center;
     padding: 10px;
     border-bottom: 1px solid rgba(6, 182, 212, 0.3);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     opacity: 0.85;
     position: fixed;
     top: 0;
@@ -103,7 +125,6 @@ export default {
     font-weight: var(--font-semi-bold);
 }
 
-
 /*Logo*/
 .navlogo a {
     display: flex;
@@ -118,10 +139,6 @@ export default {
 }
 
 @media (max-width: 600px) {
-    .navlogo {
-        width: 70%;
-    }
-
     .navlogo img {
         max-height: 70%;
     }
@@ -155,7 +172,7 @@ export default {
 }
 
 .probutton {
-    padding: 5px 24px;
+    padding: 5px 25px;
     font-size: 16px;
     font-weight: 600;
     border: none;
@@ -182,6 +199,10 @@ export default {
     transition: right 0.3s ease;
 }
 
+.button--animated:hover {
+    background: none;
+}
+
 .button--animated:hover .button__text {
     transform: translateX(-25px);
 }
@@ -193,8 +214,7 @@ export default {
 /* Mobile Navigation */
 @media (min-width: 768px) {
 
-    #mobile-menu-button,
-    #mobile-menu {
+    #mobile-menu-button {
         display: none;
     }
 
@@ -235,77 +255,43 @@ export default {
     transform: rotate(-45deg) translate(6px, -6px);
 }
 
-/* Full screen wrapper */
 .user-nav-wrapper {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    visibility: hidden;
-    z-index: 999;
-    transition: visibility 0s linear 0.7s; /* Delay hiding after transition */
-    pointer-events: none;
-    opacity: 0;
-}
-
-/* Wrapper handles visibility and base transitions */
-.user-nav-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-    z-index: 999;
-}
-
-/* When menu is open */
-.user-nav-wrapper.expanded {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
-
-/* Overlay (fades in/out) */
-.user-nav-overlay {
-    position: absolute;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.7);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    z-index: 999;
+    visibility: hidden;
+    width: 100vw;
+    height: 100vh;
+    visibility: hidden;
+    transform: translateX(100%);
+    transition: transform 0.5s ease, visibility 0.5s ease;
 }
 
-/* Overlay fades in with wrapper */
-.user-nav-wrapper.expanded .user-nav-overlay {
-    opacity: 1;
+.user-nav-wrapper.expanded {
+    visibility: visible;
+    transform: translateX(0);
 }
 
-/* Menu content (slides in from right, then out on close) */
-.user-nav-content {
+.user-nav-overlay {
     position: absolute;
     top: 0;
     right: 0;
-    width: 80%;
+    width: 100%;
     height: 100%;
-    background-color: #fff;
-    transform: translateX(100%);
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    transition-delay: 0.2s;
-    display: flex;
-    flex-direction: column;
-    gap: 5vh;
-    padding: 20px;
-    padding-bottom: 20%;
+    background-color: rgba(0, 0, 0, 0.7);
 }
 
-/* Slide in when expanded */
-.user-nav-wrapper.expanded .user-nav-content {
-    transform: translateX(0);
-    transition-delay: 0.2s; /* Slides in after overlay fades in */
+.user-nav-content {
+    background-color: #fff;
+    width: 85%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    transform: translateX(20%);
+    transition: transform 1s ease-in-out;
+    padding: 20px;
+    padding-bottom: 20%;
 }
 
 /* Slide out before overlay fades out */
@@ -314,7 +300,25 @@ export default {
     transition-delay: 0s;
 }
 
-@media (max-width: 767px) {
+#menu {
+    list-style-type: none;
+}
+
+#menu li {
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #e1e1e1;
+    padding: 10px 0;
+    font-size: 22px;
+    text-align: left;
+    color: var(--primary);
+}
+
+#menu li a {
+    color: var(--primary);
+}
+
+
+@media (max-width: 900px) {
     .navbar {
         display: none;
     }
@@ -323,16 +327,9 @@ export default {
         display: block;
     }
 
-    #mobile-menu {
-        display: block;
-    }
-
-    section {
-        padding: 4rem 0;
-    }
-
-    .container {
-        padding: 0 1rem;
+    .navContainer {
+        gap: 5%;
+        justify-content: space-between;
     }
 
     #navbar {
@@ -342,6 +339,10 @@ export default {
     .nav-link::after {
         display: none;
     }
-}
 
+    .probutton {
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+}
 </style>

@@ -26,11 +26,11 @@
                                 </div>
                             </div>
                             <div class="list-group list-group-flush text-center mt-4">
-                                <a href="#" @click="goToHome" class="btn mybtn">
+                                <a @click="goToHome" class="btn mybtn">
                                     <svg-icon type="mdi" :path="home" />
                                     HomePage
                                 </a>
-                                <a href="#" @click="logout" class="btn mybtn">
+                                <a @click="logout" class="btn mybtn">
                                     <svg-icon type="mdi" :path="logouticon" />
                                     Sign out
                                 </a>
@@ -78,6 +78,7 @@
 
                 <CollapsDetails title="Fixed Deposits" id="accounts">
                 </CollapsDetails>
+                
                 <CollapsDetails title="Recurring Deposits" id="accounts">
                 </CollapsDetails>
 
@@ -114,26 +115,26 @@
                             </div>
                         </div>
                         <div class="list-group list-group-flush text-center mt-4">
-                            <a href="#" @click="goToHome" class="btn mybtn">
+                            <a @click="goToHome" class="btn mybtn">
                                 <svg-icon type="mdi" :path="home" />
                                 HomePage
                             </a>
-                            <a href="#" class="btn mybtn" :class="{ active: activeIndex === 0 }"
+                            <a class="btn mybtn" :class="{ active: activeIndex === 0 }"
                                 @click.prevent="showProfileDetails">
                                 <svg-icon type="mdi" :path="acc" />
                                 Personal Information
                             </a>
-                            <a href="#" class="btn mybtn" :class="{ active: activeIndex === 1 }"
+                            <a class="btn mybtn" :class="{ active: activeIndex === 1 }"
                                 @click.prevent="showAddressBook">
                                 <svg-icon type="mdi" :path="add" />
                                 Address
                             </a>
-                            <a href="#" class="btn mybtn" :class="{ active: activeIndex === 2 }"
+                            <a class="btn mybtn" :class="{ active: activeIndex === 2 }"
                                 @click.prevent="showAcc">
                                 <svg-icon type="mdi" :path="passbook" />
                                 Account Information
                             </a>
-                            <a href="#" @click="logout" class="btn mybtn">
+                            <a @click="logout" class="btn mybtn">
                                 <svg-icon type="mdi" :path="logouticon" />
                                 Sign out
                             </a>
@@ -403,7 +404,7 @@ export default {
             localStorage.removeItem("user-login-info");
 
             // Redirect to signin page
-            this.$router.push("/Sign-In");
+            this.$router.push("/");
         },
         goToHome() {
             // Redirect to signin page
