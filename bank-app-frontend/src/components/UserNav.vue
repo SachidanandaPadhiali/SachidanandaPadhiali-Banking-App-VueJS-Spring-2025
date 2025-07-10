@@ -108,7 +108,6 @@ export default {
     z-index: 999;
 }
 
-
 /* Navigation Bar Styles */
 .navbar {
     z-index: 50;
@@ -142,33 +141,6 @@ export default {
     .navlogo img {
         max-height: 70%;
     }
-}
-
-/* Navigation Links */
-.nav-link {
-    position: relative;
-}
-
-.nav-link::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(to right, var(--primary), var(--accent));
-    transition: width 0.3s ease;
-    transform: translateX(-50%);
-}
-
-.nav-link:hover::after,
-.nav-link.active::after {
-    width: 80%;
-}
-
-.nav-link:hover {
-    color: var(--accent);
-    text-shadow: 0 0 8px rgba(6, 182, 212, 0.3);
 }
 
 .probutton {
@@ -214,45 +186,10 @@ export default {
 /* Mobile Navigation */
 @media (min-width: 768px) {
 
-    #mobile-menu-button {
-        display: none;
-    }
-
     .navbar {
         display: flex;
         gap: 1.5rem;
     }
-}
-
-#mobile-menu-button {
-    color: black;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-}
-
-/* Hamburger Lines */
-.line {
-    display: block;
-    width: 25px;
-    height: 3px;
-    margin: 5px auto;
-    background-color: black;
-    transition: transform 0.3s ease, opacity 0.2s ease, background-color 0.3s ease;
-    transform-origin: center;
-}
-
-/* Hamburger Animation - Active State */
-#mobile-menu-button.active #line1 {
-    transform: rotate(45deg) translate(5px, 5px);
-}
-
-#mobile-menu-button.active #line2 {
-    opacity: 0;
-}
-
-#mobile-menu-button.active #line3 {
-    transform: rotate(-45deg) translate(6px, -6px);
 }
 
 .user-nav-wrapper {
@@ -300,33 +237,10 @@ export default {
     transition-delay: 0s;
 }
 
-#menu {
-    list-style-type: none;
-}
-
-#menu li {
-    margin-bottom: 0.5rem;
-    border-bottom: 1px solid #e1e1e1;
-    padding: 10px 0;
-    font-size: 22px;
-    text-align: left;
-    color: var(--primary);
-}
-
-#menu li a {
-    color: var(--primary);
-}
-
-
 @media (max-width: 900px) {
     .navbar {
         display: none;
     }
-
-    #mobile-menu-button {
-        display: block;
-    }
-
     .navContainer {
         gap: 5%;
         justify-content: space-between;

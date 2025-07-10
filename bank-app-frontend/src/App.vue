@@ -3,6 +3,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'App',
   mounted() {
@@ -97,6 +98,59 @@ export default {
   background: linear-gradient(to bottom, var(--primary-dark), var(--accent));
 }
 
+/* Navigation Links */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(to right, var(--primary), var(--accent));
+  transition: width 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 80%;
+}
+
+.nav-link:hover {
+  color: var(--accent);
+  text-shadow: 0 0 8px rgba(6, 182, 212, 0.3);
+}
+
+#menu {
+  list-style-type: none;
+}
+
+#menu a {
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #e1e1e1;
+  padding: 10px 0;
+  font-size: 22px;
+  text-align: left;
+  color: var(--primary);
+}
+
+#menu li {
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #e1e1e1;
+  padding: 10px 0;
+  font-size: 22px;
+  text-align: left;
+  color: var(--primary);
+}
+
+#menu li a {
+  color: var(--primary);
+}
+
 .btn {
   position: relative;
   z-index: 0;
@@ -156,21 +210,48 @@ export default {
   width: 51%;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
+/*Global Mobile Menu*/
+#mobile-menu-button {
+  color: black;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
-::-webkit-scrollbar-track {
-    background: var(--dark-bg);
+/* Hamburger Lines */
+.line {
+  display: block;
+  width: 25px;
+  height: 3px;
+  margin: 5px auto;
+  background-color: black;
+  transition: transform 0.3s ease, opacity 0.2s ease, background-color 0.3s ease;
+  transform-origin: center;
 }
 
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, var(--primary), var(--accent));
-    border-radius: 4px;
+/* Hamburger Animation - Active State */
+#mobile-menu-button.active #line1 {
+  transform: rotate(45deg) translate(5px, 5px);
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(to bottom, var(--primary), var(--accent));
+#mobile-menu-button.active #line2 {
+  opacity: 0;
+}
+
+#mobile-menu-button.active #line3 {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Mobile Navigation */
+@media (min-width: 768px) {
+  #mobile-menu-button {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  #mobile-menu-button {
+    display: block;
+  }
 }
 </style>

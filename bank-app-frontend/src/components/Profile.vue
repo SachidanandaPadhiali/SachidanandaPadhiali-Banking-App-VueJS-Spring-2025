@@ -1,89 +1,94 @@
 <template>
-    <div class="container">
-        <div class="main-body">
-            <div v-if="isMobileScreen">
-                <svg-icon v-if="!mobileMenuOpen" class="hamburger-icon" type="mdi" :path="menuToggle"
-                    @click="toggleMobileMenu" />
-                <!-- Mobile Navigation -->
-                <div class="mobile-nav-wrapper" :class="{ expanded: mobileMenuOpen }">
-                    <div class="mobile-nav-overlay" @click.self="toggleMobileMenu">
-                        <div class="mobile-nav-content">
-                            <span class="mobile-nav-close" @click="toggleMobileMenu">
-                                <svg-icon type="mdi" :path="menuclose" />
-                            </span>
-                            <div class="logo-box">
-                                <router-link to="/" class="logo">
-                                    <img style="height: 50px; padding:0px; margin: 0px;"
-                                        src="../assets/img/logoblack.png" alt="Logo" />
-                                </router-link>
+    <div v-if="isMobileScreen">
+        <div class="mobile-container">
+            <button id="mobile-menu-button" :class="{ active: mobileMenuOpen }" @click="toggleMobileMenu">
+                <span id="line1" class="line"></span>
+                <span id="line2" class="line"></span>
+                <span id="line3" class="line"></span>
+            </button>
+
+            <!-- Mobile Navigation -->
+            <div class="profile-nav-wrapper" :class="{ expanded: mobileMenuOpen }">
+                <div class="profile-nav-overlay" @click.self="toggleMobileMenu">
+                    <div class="profile-nav-content">
+                        <span class="profile-nav-close" @click="toggleMobileMenu">
+                            <svg-icon type="mdi" :path="menuclose" />
+                        </span>
+                        <div class="logo-box">
+                            <router-link to="/" class="logo">
+                                <img style="height: 50px; padding:0px; margin: 0px;" src="../assets/img/logoblack.png"
+                                    alt="Logo" />
+                            </router-link>
+                        </div>
+                        <div class="d-flex flex-column align-items-center text-center">
+                            <div class="mt-3">
+                                <h4>{{ user.firstName }}</h4>
+                                <p class="text-secondary mb-1">{{ user.email }}</p>
+                                <p class="text-muted font-size-sm">{{ user.phoneNumber }}</p>
+                                <p class="text-secondary mb-1">{{ formattedDate }}</p>
                             </div>
-                            <div class="d-flex flex-column align-items-center text-center">
-                                <div class="mt-3">
-                                    <h4>{{ user.firstName }}</h4>
-                                    <p class="text-secondary mb-1">{{ user.email }}</p>
-                                    <p class="text-muted font-size-sm">{{ user.phoneNumber }}</p>
-                                    <p class="text-secondary mb-1">{{ formattedDate }}</p>
-                                </div>
-                            </div>
-                            <div class="list-group list-group-flush text-center mt-4">
-                                <a @click="goToHome" class="btn mybtn">
-                                    <svg-icon type="mdi" :path="home" />
-                                    HomePage
-                                </a>
-                                <a @click="logout" class="btn mybtn">
-                                    <svg-icon type="mdi" :path="logouticon" />
-                                    Sign out
-                                </a>
-                            </div>
+                        </div>
+                        <div id="menu" class="list-group list-group-flush text-center mt-4">
+                            <a @click="goToHome" class="nav-link">
+                                <svg-icon type="mdi" :path="home" />
+                                HomePage
+                            </a>
+                            <a @click="logout" class="nav-link">
+                                <svg-icon type="mdi" :path="logouticon" />
+                                Sign out
+                            </a>
                         </div>
                     </div>
                 </div>
-
-                <CollapsDetails title="Personal Details">
-                    <div class="accdetails">
-                        <div class="mycard-body">
-                            <h4>{{ user.fullname }}</h4>
-                            <p><strong>Email:</strong> {{ user.email }}</p>
-                            <p><strong>Phone No.:</strong> {{ user.phoneNumber }}</p>
-                            <hr>
-                            <h5>Address Book</h5>
-                            <hr>
-                            <p>{{ user.addressLine1 }}, {{ user.addressLine2 }}, {{ user.city }}</p>
-                            <p>{{ user.state }} - {{ user.pin }}</p>
-                            <p>Mobile: {{ user.phoneNumber }}</p>
-                        </div>
-                    </div>
-                </CollapsDetails>
-
-                <div class="detailscard">
-                    <div class="mycard-body">
-                        <h5>Account Information</h5>
-                        <hr>
-                        <h3>{{ user.fullname }}</h3>
-                        <div class="savingsnav">
-                            <div class="savingsnav1">
-                                Savings Account<br>
-                                <p>Account Balance</p>
-                                <span v-if="showBal" @click="showBalance()">₹{{ user.bal }}</span>
-                                <span v-else @click="showBalance()">XX XXX <svg-icon class="myicons"
-                                        style="margin-left: 20px;" type="mdi" :path="eye" />
-                                </span>
-                            </div>
-
-                            <router-link to="/User/savings"><svg-icon class="myicons" type="mdi" style="margin: 20px;"
-                                    :path="gotosavings" /></router-link>
-                        </div>
-                    </div>
-                </div>
-
-                <CollapsDetails title="Fixed Deposits" id="accounts">
-                </CollapsDetails>
-                
-                <CollapsDetails title="Recurring Deposits" id="accounts">
-                </CollapsDetails>
-
             </div>
-            <div v-else class="row">
+
+            <CollapsDetails title="Personal Details">
+                <div class="accdetails">
+                    <div class="mycard-body">
+                        <h4>{{ user.fullname }}</h4>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                        <p><strong>Phone No.:</strong> {{ user.phoneNumber }}</p>
+                        <hr>
+                        <h5>Address Book</h5>
+                        <hr>
+                        <p>{{ user.addressLine1 }}, {{ user.addressLine2 }}, {{ user.city }}</p>
+                        <p>{{ user.state }} - {{ user.pin }}</p>
+                        <p>Mobile: {{ user.phoneNumber }}</p>
+                    </div>
+                </div>
+            </CollapsDetails>
+
+            <div class="detailscard">
+                <div class="mycard-body">
+                    <h5>Account Information</h5>
+                    <hr>
+                    <h3>{{ user.fullname }}</h3>
+                    <div class="savingsnav">
+                        <div class="savingsnav1">
+                            Savings Account<br>
+                            <p>Account Balance</p>
+                            <span v-if="showBal" @click="showBalance()">₹{{ user.bal }}</span>
+                            <span v-else @click="showBalance()">XX XXX <svg-icon class="myicons"
+                                    style="margin-left: 20px;" type="mdi" :path="eye" />
+                            </span>
+                        </div>
+
+                        <router-link to="/User/savings"><svg-icon class="myicons" type="mdi" style="margin: 20px;"
+                                :path="gotosavings" /></router-link>
+                    </div>
+                </div>
+            </div>
+
+            <CollapsDetails title="Fixed Deposits" id="accounts">
+            </CollapsDetails>
+
+            <CollapsDetails title="Recurring Deposits" id="accounts">
+            </CollapsDetails>
+
+        </div>
+    </div>
+    <div v-else class="container">
+            <div class="row">
                 <!-- Sidebar -->
                 <div class="col-md-4">
                     <div class="mycard">
@@ -129,8 +134,7 @@
                                 <svg-icon type="mdi" :path="add" />
                                 Address
                             </a>
-                            <a class="btn mybtn" :class="{ active: activeIndex === 2 }"
-                                @click.prevent="showAcc">
+                            <a class="btn mybtn" :class="{ active: activeIndex === 2 }" @click.prevent="showAcc">
                                 <svg-icon type="mdi" :path="passbook" />
                                 Account Information
                             </a>
@@ -199,9 +203,7 @@
 
                 </div>
             </div>
-
         </div>
-    </div>
 </template>
 
 <script>
@@ -423,18 +425,7 @@ export default {
     white-space: pre-line;
 }
 
-.hamburger-icon {
-    font-size: 30px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1001;
-}
-
-.mobile-nav-close {
+.profile-nav-close {
     display: inline-block;
     font-size: 24px;
     cursor: pointer;
@@ -443,49 +434,48 @@ export default {
 }
 
 /* Full screen overlay when the mobile menu is open */
-.mobile-nav-wrapper {
+.profile-nav-wrapper {
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0;
+    z-index: 999;
     width: 100vw;
     height: 100vh;
     visibility: hidden;
-    transform: translateX(-100%);
+    transform: translateX(100%);
     transition: transform 0.5s ease, visibility 0.5s ease;
-    z-index: 999;
 }
 
-.mobile-nav-wrapper.expanded {
+.profile-nav-wrapper.expanded {
     visibility: visible;
     transform: translateX(0);
 }
 
-.mobile-nav-overlay {
+.profile-nav-overlay {
     position: absolute;
     top: 0;
-    left: 0;
     right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
 }
 
-.mobile-nav-content {
+.profile-nav-content {
     background-color: #fff;
-    width: 80%;
+    width: 85%;
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 5vh;
-    transform: translateX(100%);
-    transition: transform 0.3s ease-in-out;
-    /* Smooth sliding effect */
+    transform: translateX(20%);
+    transition: transform 1s ease-in-out;
     padding: 20px;
     padding-bottom: 20%;
 }
 
-.mobile-nav-overlay .mobile-nav-content {
-    transform: translateX(0);
+/* Slide out before overlay fades out */
+.profile-nav-wrapper:not(.expanded) .profile-nav-content {
+    transform: translateX(100%);
+    transition-delay: 0s;
 }
 
 /* ............/navbar/............ */
@@ -540,7 +530,10 @@ export default {
 .container {
     max-width: 1200px;
     width: 100%;
-    margin: 10px auto;
+}
+
+.mobile-container {
+    margin: 1vh;
 }
 
 .mycard {

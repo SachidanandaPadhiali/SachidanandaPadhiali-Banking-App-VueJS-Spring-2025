@@ -1,15 +1,14 @@
 <template>
-    <UserNav/>
+    <UserNav />
 </template>
 
 <script>
 import UserNav from './UserNav.vue';
 
-    export default{
-        name: 'UserHomePage',
-        components: {UserNav}
-    }
+export default {
+    name: 'UserHomePage',
+    components: { UserNav },
+}
 </script>
 
-<style>
-</style>
+<style></style>
