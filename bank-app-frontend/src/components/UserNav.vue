@@ -192,51 +192,6 @@ export default {
     }
 }
 
-.user-nav-wrapper {
-    position: fixed;
-    inset: 0;
-    z-index: 999;
-    visibility: hidden;
-    width: 100vw;
-    height: 100vh;
-    visibility: hidden;
-    transform: translateX(100%);
-    transition: transform 0.5s ease, visibility 0.5s ease;
-}
-
-.user-nav-wrapper.expanded {
-    visibility: visible;
-    transform: translateX(0);
-}
-
-.user-nav-overlay {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-}
-
-.user-nav-content {
-    background-color: #fff;
-    width: 85%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    transform: translateX(20%);
-    transition: transform 1s ease-in-out;
-    padding: 20px;
-    padding-bottom: 20%;
-}
-
-/* Slide out before overlay fades out */
-.user-nav-wrapper:not(.expanded) .user-nav-content {
-    transform: translateX(100%);
-    transition-delay: 0s;
-}
-
 @media (max-width: 900px) {
     .navbar {
         display: none;

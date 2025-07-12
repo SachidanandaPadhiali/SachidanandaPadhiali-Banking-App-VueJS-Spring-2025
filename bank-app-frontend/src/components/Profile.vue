@@ -8,12 +8,9 @@
             </button>
 
             <!-- Mobile Navigation -->
-            <div class="profile-nav-wrapper" :class="{ expanded: mobileMenuOpen }">
-                <div class="profile-nav-overlay" @click.self="toggleMobileMenu">
-                    <div class="profile-nav-content">
-                        <span class="profile-nav-close" @click="toggleMobileMenu">
-                            <svg-icon type="mdi" :path="menuclose" />
-                        </span>
+            <div class="user-nav-wrapper" :class="{ expanded: mobileMenuOpen }">
+                <div class="user-nav-overlay" @click.self="toggleMobileMenu">
+                    <div class="user-nav-content">
                         <div class="logo-box">
                             <router-link to="/" class="logo">
                                 <img style="height: 50px; padding:0px; margin: 0px;" src="../assets/img/logoblack.png"
@@ -208,7 +205,7 @@
 
 <script>
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiMenu, mdiEyeCircle, mdiCloseCircle, mdiArrowRightDropCircle, mdiAccount, mdiArrowDownDropCircle, mdiBook, mdiLogout, mdiHome, mdiWallet } from '@mdi/js';
+import { mdiEyeCircle, mdiArrowRightDropCircle, mdiAccount, mdiArrowDownDropCircle, mdiBook, mdiLogout, mdiHome, mdiWallet } from '@mdi/js';
 import axios from 'axios';
 import UserAvatarDisplay from './UserAvatarDisplay.vue';
 import CollapsDetails from './Collaps.vue';
@@ -222,12 +219,9 @@ export default {
             isMobileNavOpen: false,
             mobileMenuOpen: false,
             apiUrl: `${process.env.VUE_APP_API_URL}/api`,
-            menuToggle: mdiMenu,
-            menuclose: mdiCloseCircle,
             eye: mdiEyeCircle,
             gotosavings: mdiArrowRightDropCircle,
             cir: mdiArrowDownDropCircle,
-            close: mdiCloseCircle,
             acc: mdiAccount,
             add: mdiBook,
             logouticon: mdiLogout,
@@ -423,59 +417,6 @@ export default {
 
 #accounts {
     white-space: pre-line;
-}
-
-.profile-nav-close {
-    display: inline-block;
-    font-size: 24px;
-    cursor: pointer;
-    text-align: right;
-    width: 100%;
-}
-
-/* Full screen overlay when the mobile menu is open */
-.profile-nav-wrapper {
-    position: fixed;
-    inset: 0;
-    z-index: 999;
-    width: 100vw;
-    height: 100vh;
-    visibility: hidden;
-    transform: translateX(100%);
-    transition: transform 0.5s ease, visibility 0.5s ease;
-}
-
-.profile-nav-wrapper.expanded {
-    visibility: visible;
-    transform: translateX(0);
-}
-
-.profile-nav-overlay {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-}
-
-.profile-nav-content {
-    background-color: #fff;
-    width: 85%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    transform: translateX(20%);
-    transition: transform 1s ease-in-out;
-    padding: 20px;
-    padding-bottom: 20%;
-}
-
-/* Slide out before overlay fades out */
-.profile-nav-wrapper:not(.expanded) .profile-nav-content {
-    transform: translateX(100%);
-    transition-delay: 0s;
 }
 
 /* ............/navbar/............ */
