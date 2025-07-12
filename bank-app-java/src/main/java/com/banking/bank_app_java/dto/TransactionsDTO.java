@@ -11,14 +11,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TransactionsDTO {
+
     private String transactionId;
     private String transactionType;
-    
+
     private String sourceAcc;
     private String destAcc;
-    
+
     private BigDecimal transactionAmt;
-    private String transactionStatus;
+    private BigDecimal fromUpdatedBal;
+    private BigDecimal toUpdatedBal;
     
+    private String transactionStatus;
+
     private String transactionTime;
 }

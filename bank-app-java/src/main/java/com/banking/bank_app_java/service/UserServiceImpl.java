@@ -161,6 +161,7 @@ public class UserServiceImpl implements UserService {
         newTransaction.setTransactionTime(LocalDateTime.now());
         newTransaction.setTransactionType(0);
         newTransaction.setTransactionStatus("COMPLETED");
+        newTransaction.setToUpdatedBal(userBank.getAccBalance());
 
         transactionsRepo.save(newTransaction);
         userBankRepo.save(userBank);
@@ -209,6 +210,7 @@ public class UserServiceImpl implements UserService {
         newTransaction.setTransactionTime(LocalDateTime.now());
         newTransaction.setTransactionType(2);
         newTransaction.setTransactionStatus("COMPLETED");
+        newTransaction.setFromUpdatedBal(userBank.getAccBalance());
 
         transactionsRepo.save(newTransaction);
         userBankRepo.save(userBank);
@@ -252,16 +254,6 @@ public class UserServiceImpl implements UserService {
         }
         userFromBank.setAccBalance(userFromBank.getAccBalance().subtract(transferRequest.getAmount()));
 
-        Transactions newTransaction = new Transactions();
-        newTransaction.setTransactionId(BankUtils.generateTransactionId());
-        newTransaction.setSourceAcc(userFromBank);
-        newTransaction.setDestAcc(userToBank);
-        newTransaction.setTransactionAmt(transferRequest.getAmount());
-        newTransaction.setTransactionTime(LocalDateTime.now());
-        newTransaction.setTransactionType(1);
-        newTransaction.setTransactionStatus("COMPLETED");
-
-        transactionsRepo.save(newTransaction);
         userBankRepo.save(userFromBank);
         userRepo.save(userFromTransfer);
         /**
@@ -273,6 +265,7 @@ public class UserServiceImpl implements UserService {
         emailService.sendBalanceUpdateEmail(debitEmailDetails);
 
         userToBank.setAccBalance(userToBank.getAccBalance().add(transferRequest.getAmount()));
+        userBankRepo.save(userToBank);
         userRepo.save(userToTransfer);
 
         /**
@@ -282,6 +275,18 @@ public class UserServiceImpl implements UserService {
                 .subject("🎉 ACCOUNT CREDITED..  " + userToTransfer.getFirstName() + " " + userToTransfer.getLastName())
                 .user(userToTransfer).account(userToBank).isCredit(1).amount(transferRequest.getAmount()).build();
         emailService.sendBalanceUpdateEmail(creditEmailDetails);
+
+        Transactions newTransaction = new Transactions();
+        newTransaction.setTransactionId(BankUtils.generateTransactionId());
+        newTransaction.setSourceAcc(userFromBank);
+        newTransaction.setDestAcc(userToBank);
+        newTransaction.setTransactionAmt(transferRequest.getAmount());
+        newTransaction.setTransactionTime(LocalDateTime.now());
+        newTransaction.setTransactionType(1);
+        newTransaction.setTransactionStatus("COMPLETED");
+        newTransaction.setFromUpdatedBal(userFromBank.getAccBalance());
+        newTransaction.setToUpdatedBal(userToBank.getAccBalance());
+        transactionsRepo.save(newTransaction);
 
         return BankResponse.builder().responseCode(AccountUtils.BALANCE_TRANSFERRED_CODE)
                 .responseMessage(AccountUtils.BALANCE_TRANSFERRED_MESSAGE)
@@ -328,6 +333,8 @@ public class UserServiceImpl implements UserService {
                     .transactionTime(txs.getTransactionTime().toString())
                     .sourceAcc(txs.getSourceAcc().getAccNo())
                     .destAcc(txs.getDestAcc().getAccNo())
+                    .fromUpdatedBal(txs.getFromUpdatedBal())
+                    .toUpdatedBal(txs.getToUpdatedBal())
                     .build();
 
             userTxs.add(bankTransaction);

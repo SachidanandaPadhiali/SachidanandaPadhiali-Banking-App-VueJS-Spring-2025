@@ -38,6 +38,12 @@ public class Transactions {
 
     @Column(name = "transaction_amt", nullable = false)
     private BigDecimal transactionAmt;
+    
+    @Column(name = "from_updated_bal", nullable = false)
+    private BigDecimal fromUpdatedBal;
+
+    @Column(name = "to_updated_bal", nullable = false)
+    private BigDecimal toUpdatedBal;
 
     @Column(name = "transaction_status", nullable = false)
     private String transactionStatus;

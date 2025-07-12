@@ -63,7 +63,7 @@
 
                             <!-- ========== LINE 2 ========== -->
                             <tr class="transactionMeta">
-                                <td colspan="3">
+                                <td colspan="4">
                                     <div class="meta-flex">
                                         <div class="tx-type">
                                             <div style="display: flex; flex-direction: row;">
@@ -78,8 +78,14 @@
                                             <div class="txn-id mobile-only">TXN ID: {{ transaction.transactionId }}
                                             </div>
                                         </div>
+
                                         <div class="txn-id desktop-only">TXN ID: {{ transaction.transactionId }}</div>
-                                        <div class="tx-status">{{ transaction.transactionStatus }}</div>
+
+                                        <div class="tx-type1">
+                                            <div class="tx-updated-bal"> Balance:&nbsp;{{ transaction.fromUpdatedBal }}
+                                            </div>
+                                            <div class="tx-status mobile-only">{{ transaction.transactionStatus }}</div>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -357,7 +363,6 @@ export default {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    align-items: center;
     flex-wrap: nowrap;
     gap: 0.5rem;
     padding-bottom: 5px;
@@ -365,17 +370,22 @@ export default {
 }
 
 .txn-id {
-    font-size: 0.9rem;
+    font-size: var(--normal-font-size);
     color: var(--text-secondary);
 }
 
 .tx-status {
     text-align: right;
-    font-weight: bold;
+    font-weight: var(--font-normal);
+}
+
+.tx-updated-bal {
+    text-align: right;
+    font-weight: var(--font-semi-bold);
 }
 
 .tx-type {
-    flex-basis: 30%;
+    flex-basis: 25%;
     display: flex;
     flex-direction: row;
 }
@@ -387,12 +397,23 @@ export default {
     padding: 0px;
 }
 
+.tx-type1 {
+    flex-basis: 25%;
+}
+
+.tx-type1 p {
+    height: 20px;
+    width: 20px;
+    margin: 0px;
+    padding: 0px;
+}
+
 .mobile-only {
     display: none;
 }
 
 .desktop-only {
-    flex-basis: 50%;
+    flex-basis: 55%;
     display: inline;
     text-align: left;
 }
@@ -473,13 +494,33 @@ export default {
 
     .meta-flex {
         flex-direction: row;
-        align-items: flex-start;
+        align-content: flex-start;
         gap: 0;
 
     }
 
+    .tx-type,
+    .tx-type1,
+    .txn-id {
+        flex-basis: auto;
+        width: 100%;
+        overflow: visible;
+        text-overflow: unset;
+        text-align: left;
+    }
+    
+    .txn-id {
+        font-size: var(--small-font-size);
+    }
+
     .tx-type {
         flex-direction: column;
+        flex: 2;
+    }
+
+    .tx-type1 {
+        flex-direction: column;
+        flex: 1;
     }
 
     .mobile-only {
@@ -490,13 +531,5 @@ export default {
         display: none;
     }
 
-    .tx-type,
-    .txn-id {
-        flex-basis: auto;
-        width: 100%;
-        overflow: visible;
-        text-overflow: unset;
-        text-align: left;
-    }
 }
 </style>
