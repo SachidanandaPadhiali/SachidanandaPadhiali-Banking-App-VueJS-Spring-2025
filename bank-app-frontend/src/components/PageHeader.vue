@@ -430,7 +430,6 @@ export default {
 }
 
 .desktop-nav .has-submenu .submenu {
-
     display: none;
     position: absolute;
     top: 100%;
@@ -610,7 +609,6 @@ export default {
 }
 
 /*====== Mobile menu list ======*/
-
 .mobile-menu-list {
     list-style: none;
     padding: 0;

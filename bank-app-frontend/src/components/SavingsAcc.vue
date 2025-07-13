@@ -47,12 +47,12 @@
                     <tbody>
                         <template v-for="(transaction, index) in displayedTransactions" :key="index">
                             <!-- ROW 1 -->
-                            <tr class="transactionMeta">
+                            <tr>
                                 <td class="txDate">{{ formattedDate(transaction.transactionTime) }}</td>
 
                                 <td class="txFromTo" style="text-align: left;">
                                     <span v-if="transaction.transactionType === 'DEBIT'">TO {{ transaction.destAcc
-                                    }}</span>
+                                        }}</span>
                                     <span v-else-if="transaction.transactionType === 'CREDIT'">FROM {{
                                         transaction.sourceAcc }}</span>
                                     <span v-else>&nbsp;</span>
@@ -62,8 +62,8 @@
                             </tr>
 
                             <!-- ========== LINE 2 ========== -->
-                            <tr class="transactionMeta">
-                                <td colspan="4">
+                            <tr>
+                                <td colspan="3">
                                     <div class="meta-flex">
                                         <div class="tx-type">
                                             <div style="display: flex; flex-direction: row;">
@@ -80,11 +80,15 @@
                                         </div>
 
                                         <div class="txn-id desktop-only">TXN ID: {{ transaction.transactionId }}</div>
+                                        <div class="tx-updated-bal desktop-only" style="text-align: right;"> Balance:&nbsp;{{
+                                            transaction.fromUpdatedBal }}
+                                        </div>
 
-                                        <div class="tx-type1">
-                                            <div class="tx-updated-bal"> Balance:&nbsp;{{ transaction.fromUpdatedBal }}
+                                        <div class="tx-type1 mobile-only">
+                                            <div class="tx-updated-bal"> Balance:&nbsp;{{
+                                                transaction.fromUpdatedBal }}
                                             </div>
-                                            <div class="tx-status mobile-only">{{ transaction.transactionStatus }}</div>
+                                            <div class="tx-status">{{ transaction.transactionStatus }}</div>
                                         </div>
                                     </div>
                                 </td>
@@ -332,14 +336,6 @@ export default {
     font-size: var(--normal-font-size);
 }
 
-.transactionRow {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-}
-
 .txDate {
     font-weight: var(--font-semi-bold);
     width: 35%;
@@ -364,7 +360,7 @@ export default {
     justify-content: space-between;
     flex-wrap: wrap;
     flex-wrap: nowrap;
-    gap: 0.5rem;
+    gap: 1.5rem;
     padding-bottom: 5px;
     border-bottom: 1px solid var(--border);
 }
@@ -380,12 +376,14 @@ export default {
 }
 
 .tx-updated-bal {
+    flex-basis: 15%;
     text-align: right;
     font-weight: var(--font-semi-bold);
+    font-size: var(--medium-font-size);
 }
 
 .tx-type {
-    flex-basis: 25%;
+    flex-basis: 34%;
     display: flex;
     flex-direction: row;
 }
@@ -413,7 +411,7 @@ export default {
 }
 
 .desktop-only {
-    flex-basis: 55%;
+    flex-basis: 51%;
     display: inline;
     text-align: left;
 }
@@ -508,8 +506,8 @@ export default {
         text-overflow: unset;
         text-align: left;
     }
-    
-    .txn-id {
+
+    .txn-id,.tx-status {
         font-size: var(--small-font-size);
     }
 
@@ -531,5 +529,10 @@ export default {
         display: none;
     }
 
+}
+@media (max-width: 768px) {
+    .txFromTo {
+        display:none;
+    }
 }
 </style>

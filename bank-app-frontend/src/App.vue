@@ -52,6 +52,7 @@ export default {
   --h2-font-size: 1.25rem;
   --h3-font-size: 1.125rem;
   --normal-font-size: 1rem;
+  --medium-font-size: 0.9rem;
   --small-font-size: 0.8rem;
   --smaller-font-size: 0.7rem;
 
@@ -130,24 +131,22 @@ export default {
 }
 
 #menu a {
-  margin-bottom: 0.5rem;
   border-bottom: 1px solid #e1e1e1;
-  padding: 10px 0;
-  font-size: 22px;
+  padding: var(--mb-2) 0;
+  font-size: var(--normal-font-size);
   text-align: left;
   color: var(--primary);
 }
 
 #menu li {
-  margin-bottom: 0.5rem;
   border-bottom: 1px solid #e1e1e1;
-  padding: 10px 0;
-  font-size: 22px;
+  padding: var(--mb-2) 0;
   text-align: left;
   color: var(--primary);
 }
 
 #menu li a {
+  font-size: var(--normal-font-size);
   color: var(--primary);
 }
 
@@ -157,7 +156,7 @@ export default {
   overflow: hidden;
   width: fit-content;
   background-color: var(--bg-btn);
-  padding: 10px;
+  padding: var(--mb-2);
   height: 40px;
   color: var(--white-text);
   text-decoration: none;

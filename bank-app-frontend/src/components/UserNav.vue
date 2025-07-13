@@ -11,17 +11,40 @@
         <div class="navlogo">
             <img src="../assets/img/applogo.png" alt="App Logo" />
         </div>
+            <nav class="navbar">
+                <ul class="menu-list">
+                    <li class="nav-link">
+                        <router-link to="/User/Home">Home</router-link>
+                    </li>
 
-        <!-- Desktop Navigation -->
-        <nav class="navbar">
-            <router-link :to="{ path: '/User/Home' }" class="nav-link">Home</router-link>
-            <a href="#about" class="nav-link">Deposits</a>
-            <a href="#services" class="nav-link">Cards</a>
-            <a href="#portfolio" class="nav-link">Borrow</a>
-            <a href="#contact" class="nav-link">Contact</a>
-        </nav>
+                    <li class="nav-link has-submenu">
+                        <span>Deposits</span>
+                        <ul class="submenu">
+                            <li><router-link to="/fdDeposit">Fixed Deposits</router-link></li>
+                            <li><router-link to="/rdDeposit">Recurring Deposits</router-link></li>
+                            <li><router-link to="/interestRates">Interest rates</router-link></li>
+                        </ul>
+                    </li>
 
-        <!-- Profile Button (shared between desktop and mobile) -->
+                    <li class="nav-link has-submenu">
+                        <span>Cards</span>
+                        <ul class="submenu">
+                            <li><router-link to="/creditCard">Credit Cards</router-link></li>
+                            <li><router-link to="/debitCard">Debit Cards</router-link></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-link">
+                        <router-link to="/apply">Borrow</router-link>
+                    </li>
+
+                    <li class="nav-link">
+                        <router-link to="/contact">Contact</router-link>
+                    </li>
+                </ul>
+            </nav>
+
+         <!-- Profile Button (shared between desktop and mobile) -->
         <router-link :to="{ path: '/User/Profile' }" class="probutton button--animated">
             <span class="button__text">My Profile</span>
             <span class="button__icon">
@@ -117,11 +140,112 @@ export default {
     gap: 20px;
 }
 
-.navbar a {
+/* Desktop nav list */
+.navbar .menu-list {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
     color: var(--primary);
+    font-weight: var(--font-medium);
+}
+
+.navbar .nav-link {
+    position: relative;
+}
+
+.navbar .nav-link>a,
+.navbar .nav-link>span {
+    color: var(--primary);
+    padding: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.navbar .nav-link:hover>a,
+.navbar .nav-link:hover>span {
+    color: var(--accent);
     text-decoration: none;
-    font-size: var(--h3-font-size);
-    font-weight: var(--font-semi-bold);
+}
+
+/* Submenu (hidden by default) */
+.navbar .has-submenu .submenu {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.navbar .has-submenu .submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    min-width: 10vw;
+    border-radius: 20px;
+    background-color: var(--transparent);
+    color: var(--primary);
+    box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.05), -2px 0px 5px 1px rgba(0, 0, 0, 0.05);
+    z-index: 99;
+}
+/*====== MENNU ITEMS HOVER ====== */
+.navbar .has-submenu:hover .submenu {
+    display: block;
+}
+
+.navbar .submenu li {
+    padding: 0;
+}
+
+.navbar .submenu li a {
+    display: block;
+    text-decoration: none;
+}
+
+.navbar .submenu li a:hover {
+    color: var(--primary);
+}
+
+/*====== DROPDOWN STYLING ======*/
+.navbar .menu-list>li>ul>li {
+    position: relative;
+    width: 100%;
+    padding-left: 20px;
+}
+
+.navbar .menu-list>li>ul>li>a {
+    position: relative;
+    display: flex;
+    font-size: 17px;
+    color: var(--primary);
+    font-weight: var(--font-medium);
+    padding: 10px 0px;
+    border-bottom: 1px solid var(--border);
+    z-index: 1;
+}
+
+.navbar .menu-list>li>ul>li:last-child>a {
+    border-bottom: none;
+}
+
+.navbar .menu-list>li>ul>li:hover>a {
+    background-color: var(--transparent-accent);
+    color: var(--primary);
+}
+
+.navbar .menu-list>li>ul>li.dropdown>a:before {
+    position: absolute;
+    top: 0px;
+    right: 25px;
+    display: block;
+    font-size: 20px;
+    line-height: 50px;
+    font-weight: 400;
+    z-index: 5;
+    transition: all 500ms ease;
 }
 
 /*Logo*/
@@ -130,7 +254,6 @@ export default {
     align-items: center;
     text-decoration: none;
     gap: 1px;
-    /* Adds space between image and text */
 }
 
 .navlogo img {
