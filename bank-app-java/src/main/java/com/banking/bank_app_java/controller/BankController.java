@@ -11,7 +11,7 @@ import com.banking.bank_app_java.service.BankingService;
 import com.banking.bank_app_java.dto.BanksDTO;
 
 @CrossOrigin(
-        origins = "http://192.168.1.4.nip.io:8080",
+        origins = "https://sachidanandapadhiali-banking-app-spring.onrender.com:8080",
         allowedHeaders = "*",
         allowCredentials = "true"
 )

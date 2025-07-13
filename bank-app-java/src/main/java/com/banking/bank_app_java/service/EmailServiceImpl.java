@@ -52,7 +52,7 @@ public class EmailServiceImpl implements EmailService {
 					+ "e<br>Linked Phone Number: " + emailDetails.getSavedUser().getPhoneNumber() + "</div>"
 					+ "<p style=\"font-size: 15px; color: #333;\">You can now access your account through our online banking platform or mobile app.</p>"
 					+ "<div style=\"text-align: center; margin-top: 30px;\">"
-					+ "<a href=\"http://192.168.1.4.nip.io:8080/Sign-in\" style=\"background-color: #134B70; color: #ffffff; padding: 12px 25px; border-radius: 5px; text-decoration: none; font-weight: bold;\">Log In to Your Account</a>"
+					+ "<a href=\"https://sachidanandapadhiali-banking-app-spring.onrender.com:8080/Sign-in\" style=\"background-color: #134B70; color: #ffffff; padding: 12px 25px; border-radius: 5px; text-decoration: none; font-weight: bold;\">Log In to Your Account</a>"
 					+ "</div>"
 					+ "<p style=\"margin-top: 30px; font-size: 14px; color: #888;\">For your security, please do not share your account number or credentials with anyone.</p>"
 					+ "<p style=\"font-size: 14px; color: #888;\">If you did not request this account or have any questions, contact our support team immediately.</p>"
