@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(
-        origins = "https://sachidanandapadhiali-banking-app-spring.onrender.com:8080",
+        origins = "http://192.168.1.4.nip.io:8080",
         allowedHeaders = "*",
         allowCredentials = "true"
 )
