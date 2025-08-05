@@ -298,4 +298,83 @@ export default {
     display: block;
   }
 }
+
+
+.section-cards {
+    background-color: #c7d3e3;
+    padding: 40px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.card {
+    background-color: white;
+    width: 280px;
+    margin: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card img {
+    width: 100%;
+    height: 150px;
+    object-fit: contain;
+    background-color: #f97316;
+    padding: 20px;
+}
+
+.card-content {
+    padding: 16px;
+}
+
+.card-content h3 {
+    color: #0f2c57;
+    font-size: 1.1rem;
+}
+
+.card-content p {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 10px 0;
+}
+
+.card-content button {
+    background-color: #0f2c57;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.image {
+    width: 120px;
+    height: 120px;
+    animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.parent {
+    position: relative;
+    width: 300px;
+    height: 200px;
+    background-color: lightgray;
+}
+
+.child {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+    background-color: blue;
+}
 </style>

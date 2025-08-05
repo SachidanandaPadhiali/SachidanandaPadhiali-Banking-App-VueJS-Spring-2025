@@ -5,51 +5,51 @@ import Profile from "./components/Profile.vue";
 import SignUp from "./components/SignUp.vue";
 import SignIn from "./components/SignIn.vue";
 import CreateAccount from './components/CreateAccount.vue';
-import {createRouter, createWebHistory} from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import SavingsAcc from "./components/SavingsAcc.vue";
 
 const routes = [
     {
         name: "PreLoader",
         component: PreLoader,
-        path:"/",
+        path: "/",
     },
     {
         name: "HomePage",
         component: HomePage,
-        path:"/HomePage",
+        path: "/HomePage",
     },
     {
         name: "UserHomePage",
         component: UserHome,
-        path:"/User/Home",
+        path: "/User/Home",
         meta: { requiresAuth: true }
     },
     {
         name: "SignUp",
         component: SignUp,
-        path:"/Sign-Up"
+        path: "/Sign-Up"
     },
     {
         name: "CreateAccount",
         component: CreateAccount,
-        path:"/CreateAccount"
+        path: "/CreateAccount"
     },
     {
         name: "SignIn",
         component: SignIn,
-        path:"/Sign-In"
+        path: "/Sign-In"
     },
     {
         name: "UserProfile",
         component: Profile,
-        path:"/User/Profile",
+        path: "/User/Profile",
         meta: { requiresAuth: true }
     },
     {
         name: "SavingsAcc",
         component: SavingsAcc,
-        path:"/User/savings",
+        path: "/User/savings",
         meta: { requiresAuth: true }
     }
 ];
@@ -58,14 +58,14 @@ const router = createRouter({
     history: createWebHistory(),
     routes,
     scrollBehavior(to) {
-    if (to.hash) {
-      return {
-        el: to.hash,
-        behavior: 'smooth'
-      };
+        if (to.hash) {
+            return {
+                el: to.hash,
+                behavior: 'smooth'
+            };
+        }
+        return { top: 0 };
     }
-    return { top: 0 };
-  }
 });
 
 // Navigation Guard to check authentication
